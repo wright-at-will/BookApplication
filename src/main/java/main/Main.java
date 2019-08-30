@@ -2,9 +2,9 @@ package main;
 
 import javafx.application.*;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.fxml.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,9 +27,17 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         AnchorPane root = new AnchorPane();
-       // FXMLLoader loader = new FXMLLoader();
-       // loader.setLocation( Main.class.getResource("view/Main.fxml") );
-      //  root = (AnchorPane) loader.load();
+        Pane pane = new Pane();
+        FXMLLoader loader = new FXMLLoader();
+        //loader.setLocation( Main.class.getResource("Main.fxml") );
+        loader.setLocation(getClass().getResource("../Main.fxml"));
+        try{
+            pane = (Pane) loader.load();
+        } catch (Exception e){
+            System.err.println(e.toString() + "\nLoader failed");
+
+        }
+        root = new AnchorPane(pane);
         Scene scene = new Scene( root );
 
         primaryStage.setScene( scene );
