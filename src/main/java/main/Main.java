@@ -30,7 +30,7 @@ public class Main extends Application {
         Pane pane = new Pane();
         FXMLLoader loader = new FXMLLoader();
         //loader.setLocation( Main.class.getResource("Main.fxml") );
-        loader.setLocation(getClass().getResource("../Main.fxml"));
+        loader.setLocation(getClass().getClassLoader().getResource("FXML/Main.fxml"));
         try{
             pane = (Pane) loader.load();
         } catch (Exception e){
