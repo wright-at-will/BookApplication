@@ -14,7 +14,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
 
+
+
 public class MainController implements Initializable {
+	
+	public enum ViewType{
+		BOOKDETAIL, BOOKLIST
+	}
     private static final Logger logger = LogManager.getLogger();
 
     private static MainController instance = null;
@@ -34,25 +40,25 @@ public class MainController implements Initializable {
     // eclipse used the wrong import: import java.awt.event.ActionEvent;
     // void onBeer(ActionEvent event) {
     @FXML
-    void onBeer(ActionEvent event) {
-        logger.info("Clicked on Beer");
+    void onBook(ActionEvent event) {
+        logger.info("Clicked on Book");
 
-        //showView(ViewType.DETAIL2);
+        showView(ViewType.BOOKDETAIL);
     }
-
+    
     public void showView(ViewType viewType) {
         // load view according to viewType and plug into center of rootPane
         FXMLLoader loader = null;
         Parent viewNode;
-        MyController controller = null;
+        MainController controller = null;
         switch(viewType) {
-            case DETAIL1 :
+            case BOOKDETAIL :
                 loader = new FXMLLoader(this.getClass().getResource("detail1.fxml"));
-                controller = new Detail1Controller();
+                controller = new BookDetailController();
                 break;
-            case DETAIL2 :
+            case BOOKLIST :
                 loader = new FXMLLoader(this.getClass().getResource("detail2.fxml"));
-                controller = new Detail2Controller();
+                controller = new BookListController();
                 break;
         }
         viewNode = null;
@@ -64,7 +70,8 @@ public class MainController implements Initializable {
         }
         rootPane.setCenter(viewNode);
     }
-
+	
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // TODO Auto-generated method stub
