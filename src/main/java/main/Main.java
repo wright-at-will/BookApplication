@@ -26,16 +26,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        AnchorPane root = new AnchorPane();
+        AnchorPane root;
         Pane pane = new Pane();
         FXMLLoader loader = new FXMLLoader();
-        //loader.setLocation( Main.class.getResource("Main.fxml") );
         loader.setLocation(getClass().getClassLoader().getResource("FXML/Main.fxml"));
         try{
             pane = (Pane) loader.load();
         } catch (Exception e){
-            System.err.println(e.toString() + "\nLoader failed");
-
+            logger.error(e.toString() + "\nLoader failed");
         }
         root = new AnchorPane(pane);
         Scene scene = new Scene( root );
@@ -43,4 +41,6 @@ public class Main extends Application {
         primaryStage.setScene( scene );
         primaryStage.show();
     }
+
+    @FXML
 }
