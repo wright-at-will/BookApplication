@@ -1,9 +1,13 @@
 package main.controllers;
 
-public class BookListController extends MainController {
+import main.models.Book;
+
+import java.util.ArrayList;
+
+public class BookListController implements BookController {
 	
-	private MainController mc;
-	public BookListController() {
-		mc = getInstance();
+	private ArrayList<Book> bookList = new ArrayList<Book>();
+	public BookListController(){
+
 	}
 }

@@ -1,13 +1,23 @@
 package main.models;
 
 public class Book {
+	private BookDataStore bookDataStore;
+
 	private String name;
 	private String summary;
 	private int yearPublished;
 	private String isbn;
 	
-	public Book() {
-		
+	public Book(BookDataStore bookDataStore) {
+		this.bookDataStore = bookDataStore;
+	}
+
+	public Book(BookDataStore bookDataStore, String name, String summary, int yearPublished, String isbn) throws Exception{
+		this.bookDataStore = bookDataStore;
+		this.name = name;
+		this.summary = summary;
+		setYearPublished(yearPublished);
+		this.isbn = isbn;
 	}
 
 	public String getName() {
