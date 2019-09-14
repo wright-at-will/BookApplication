@@ -35,7 +35,7 @@ public class Main extends Application {
     public void start(Stage stage) {
         logger.info("in start method");
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/Main.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/main_view.fxml"));
         MainController controller = MainController.getInstance();
         loader.setController(controller);
 
@@ -44,53 +44,27 @@ public class Main extends Application {
             rootNode = loader.load();
         } catch (IOException e) {
             e.printStackTrace();
-            return;
         }
-        /*Book book = new Book(new BookDataStore());
-        loader = new FXMLLoader(this.getClass().getResource("view/BookDetailView.fxml"));
-        //this.getClass();
-        BookController bookController = new BookListController();// BookDetailController(book);
-        loader.setController(bookController);
-        try {
-            rootNode = loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
 
         stage.setScene(new Scene(rootNode));
         stage.setTitle("Demo");
-        //Test the views
+
         stage.show();
 
-        // controller.showView(ViewType.DETAIL1);
-    }
-    /*
-    @Override
-    public void start(Stage primaryStage) {
-        AnchorPane root;
-        Pane pane = new Pane();
-        FXMLLoader loader = new FXMLLoader(this.getClass().getResource("main/view/Main.fxml"));
-        //loader.setLocation(getClass().getClassLoader().getResource("FXML/Main.fxml"));
-        loader.setController(MainController.getInstance());
-        try{
-            pane = (Pane) loader.load();
-        } catch (Exception e){
-            e.printStackTrace();
-            logger.error(e.toString() + "\nLoader failed");
-        }
-        root = new AnchorPane(pane);
-        Scene scene = new Scene( root );
 
-        primaryStage.setScene( scene );
-        primaryStage.show();
     }
-    */
+
     public ArrayList<Book> createBookList(){
         BookDataStore bookDataStore = new BookDataStore();
         ArrayList<Book> bookList = new ArrayList<Book>();
-        bookList.add(new Book(bookDataStore));
         return bookList;
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+
+        logger.info("Calling stop...");
     }
 
 

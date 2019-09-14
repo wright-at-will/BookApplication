@@ -1,5 +1,7 @@
 package main.models;
 
+import com.sun.javafx.image.IntPixelGetter;
+import main.utility.BookException;
 public class Book {
 	private BookDataStore bookDataStore;
 
@@ -8,17 +10,21 @@ public class Book {
 	private int yearPublished;
 	private String isbn;
 	
-	public Book(BookDataStore bookDataStore) {
-		this.bookDataStore = bookDataStore;
+	public Book(String bookName) {
+		if(!isValidName(bookName))
+			throw new BookException("Invalid book name: " + bookName);
+		this.name = bookName;
 	}
 
-	public Book(BookDataStore bookDataStore, String name, String summary, int yearPublished, String isbn) throws Exception{
-		this.bookDataStore = bookDataStore;
-		this.name = name;
-		this.summary = summary;
-		setYearPublished(yearPublished);
-		this.isbn = isbn;
+	public static boolean isValidName(String bookName) {
+		if(bookName == null)
+			return false;
+		if(bookName.trim().length()<1)
+			return false;
+		return true;
 	}
+
+
 
 	public String getName() {
 		return name;
@@ -36,14 +42,15 @@ public class Book {
 		this.summary = summary;
 	}
 
-	public int getYearPublished() {
-		return yearPublished;
+	public String getYearPublished() {
+		return Integer.toString(yearPublished);
 	}
 
-	public void setYearPublished(int yearPublished) throws Exception{
-		if(yearPublished < 1900)
+	public void setYearPublished(String yearPublished) throws Exception{
+		int year = Integer.parseInt(yearPublished);
+		if(year < 1900)
 			throw new Exception();
-		this.yearPublished = yearPublished;
+		this.yearPublished = year;
 	}
 
 	public String getIsbn() {
@@ -54,5 +61,8 @@ public class Book {
 		this.isbn = isbn;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return name; //return name + " " + summary +" " + yearPublished + " " + isbn;
+	}
 }

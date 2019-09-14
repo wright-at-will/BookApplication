@@ -1,5 +1,6 @@
 package main.controllers;
 
+import javafx.scene.control.TextArea;
 import main.models.Book;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -10,34 +11,27 @@ import javafx.scene.control.TextField;
 
 public class BookDetailController implements Initializable, BookController{
 
-	private Book book;
 
-	@FXML
-	private TextField bookName;
+    private Book book;
 
-	@FXML
-	private TextField summary;
+    @FXML
+    private TextField Title;
 
-	@FXML
-	private TextField yearPublished;
+    @FXML
+    private TextArea Summary;
 
-	@FXML
-	private TextField isbn;
+    @FXML
+    private TextField isbn;
 
-	public BookDetailController(Book book){
-		this.book = book;
-	}
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		//bookName.setText(book.getName());
-	}
+    @FXML
+    private TextField yearPublished;
+    public BookDetailController(Book book) {this.book = book;}
 
-
-	public Book getBook(){
-		return book;
-	}
-
-	public void setBook(Book book){
-		this.book = book;
-	}
+    @Override
+    public void initialize(URL location, ResourceBundle resources){
+        Title.setText(book.getName());
+        Summary.setText(book.getSummary());
+        isbn.setText(book.getIsbn());
+        yearPublished.setText(book.getYearPublished());
+    }
 }
