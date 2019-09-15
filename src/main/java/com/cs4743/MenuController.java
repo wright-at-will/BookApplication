@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import org.apache.logging.log4j;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -15,6 +14,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MenuController implements Initializable {
 
@@ -42,15 +43,19 @@ public class MenuController implements Initializable {
     private MenuItem showBookListMenuItem;
 
     @FXML
-    private MenuItem closeMenuItem;
+    private MenuItem closeAppMenuItem;
 
     // clickMenuItem provides control for the different menu options
     @FXML
     void clickMenuItem(ActionEvent event){
-        if(event.getSource() == closeMenuItem)
+        logger.info("Menu item clicked." + event.getSource().toString());
+        if(event.getSource() == closeAppMenuItem) {
+            logger.info("Exit menu item clicked.");
             Platform.exit();
-        else if(event.getSource() == showBookListMenuItem)
+        }else if(event.getSource() == showBookListMenuItem) {
+            logger.info("Book List menu item clicked.");
             switchView(ViewType.BOOKLISTVIEW);
+        }
     }
 
 
@@ -62,6 +67,11 @@ public class MenuController implements Initializable {
             case BOOKLISTVIEW:
                 viewString = "BookListView.fxml";
                 controller = new BookListController();
+                logger.info("Switching to BookListView");
+                if(controller == null){
+                    logger.error("Could not switch controllers");
+                    Platform.exit();
+                }
                 break;
             case BOOKDETAILVIEW:
                 viewString = "BookDetailView.fxml";
@@ -69,13 +79,22 @@ public class MenuController implements Initializable {
                 break;
         }
         try {
-            URL url = this.getClass().getResource(viewString);
+            URL url = this.getClass().getClassLoader().getResource("com/view/"+viewString);
+            if(url == null){
+                logger.error("Did not find :"+viewString);
+                Platform.exit();
+            }
+            logger.info("Found url: "+url.toString());
             FXMLLoader loader = new FXMLLoader(url);
             loader.setController(controller);
             Parent viewNode = loader.load();
-
+            if(viewNode == null){
+                logger.error("Could not load viewNode");
+                Platform.exit();
+            }
             // plug viewNode into MainView's borderpane center
-            borderPane.setCenter(viewNode);
+            logger.info(viewNode.toString());
+            //borderPane.setCenter(viewNode);
         } catch (IOException e){
             e.printStackTrace();
             logger.error("IOException");
