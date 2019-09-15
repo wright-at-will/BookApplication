@@ -25,6 +25,7 @@ public class MenuController implements Initializable {
     // log4j logger definition
     private static Logger logger = LogManager.getLogger(MenuController.class);
 
+    @FXML
     private BorderPane borderPane;
 
     private MenuController(){ }
@@ -48,7 +49,6 @@ public class MenuController implements Initializable {
     // clickMenuItem provides control for the different menu options
     @FXML
     void clickMenuItem(ActionEvent event){
-        logger.info("Menu item clicked." + event.getSource().toString());
         if(event.getSource() == closeAppMenuItem) {
             logger.info("Exit menu item clicked.");
             Platform.exit();
@@ -79,22 +79,11 @@ public class MenuController implements Initializable {
                 break;
         }
         try {
-            URL url = this.getClass().getClassLoader().getResource("com/view/"+viewString);
-            if(url == null){
-                logger.error("Did not find :"+viewString);
-                Platform.exit();
-            }
-            logger.info("Found url: "+url.toString());
+            URL url = this.getClass().getClassLoader().getResource("com/cs4743/view/" +viewString);
             FXMLLoader loader = new FXMLLoader(url);
             loader.setController(controller);
             Parent viewNode = loader.load();
-            if(viewNode == null){
-                logger.error("Could not load viewNode");
-                Platform.exit();
-            }
-            // plug viewNode into MainView's borderpane center
-            logger.info(viewNode.toString());
-            //borderPane.setCenter(viewNode);
+            borderPane.setCenter(viewNode);
         } catch (IOException e){
             e.printStackTrace();
             logger.error("IOException");

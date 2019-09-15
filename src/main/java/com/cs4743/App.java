@@ -31,7 +31,7 @@ public class App extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getClassLoader().getResource("com/view/" + fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getClassLoader().getResource("com/cs4743/view/" + fxml + ".fxml"));
         // sets the primary controller as the menu controller
         fxmlLoader.setController(controller);
         return fxmlLoader.load();
