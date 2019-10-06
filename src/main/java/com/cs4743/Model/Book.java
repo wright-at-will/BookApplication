@@ -48,8 +48,9 @@ public class Book {
     public String getSummary() {
         return summary;
     }
-    public int getPubYear() {
-        return pubYear;
+    public String getPubYear() {
+        if(pubYear <1400) return null;
+        return pubYear+"";
     }
     public String getIsbn() {
         return isbn;
@@ -59,21 +60,22 @@ public class Book {
     public boolean save(String title, String summary, String year, String isbn){
         if(saveTitle(title) && saveSummary(summary) && saveYear(year) && saveIsbn(isbn)) {
             bookID = BookTableGateway.update(this);
-            if (bookID == 0)
+            if (bookID == 0) {
                 return false;
+            }
             return true;
         }
         return false;
     }
 
     private boolean saveTitle(String title){
-        if(title == null)
+        if(title == null || title.equals(""))
             return false;
         this.title = title;
         return true;
     }
     private boolean saveSummary(String summary){
-        if(summary == null)
+        if(summary == null || summary.equals(""))
             return true;
         if(summary.length() > 65535)
             return false;
@@ -81,7 +83,7 @@ public class Book {
         return true;
     }
     private boolean saveYear(String year){
-       if(year == null)
+       if(year == null || year.equals(""))
            return true;
        try{
            this.pubYear = Integer.parseInt(year);
@@ -91,10 +93,11 @@ public class Book {
        return true;
     }
     private boolean saveIsbn(String isbn){
-        if(isbn == null)
+        if(isbn == null || isbn.equals(""))
             return true;
         if(isbn.length() > 13)
             return false;
+        this.isbn = isbn;
         return true;
     }
 

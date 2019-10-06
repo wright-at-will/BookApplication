@@ -45,7 +45,7 @@ public class BookTableGateway {
                             "WHERE `id` = ?",
                     "SELECT * FROM Book WHERE id = ?",
                     "SELECT id, title FROM Book",
-                    "DELETE FROM `Book` WHERE `Book`.`title` = ?"
+                    "DELETE FROM `Book` WHERE `id` = ?"
             };
 
     //TODO Create should create the query inside it according to the parts of the book that have been filled out
@@ -56,22 +56,22 @@ public class BookTableGateway {
         }
         ArrayList<String> filledFields = new ArrayList<>();
         ArrayList<Object> params = new ArrayList<>();
-        StringBuilder query = new StringBuilder("UPDATE `Book` SET");
+        StringBuilder query = new StringBuilder("UPDATE `Book` SET ");
         try {
             //Title cannot be null
                 params.add(book.getTitle());
-                query.append("`title` = ?");
-            if(book.getSummary()!=null) {
+                query.append("`title` = ? ");
+            //if(book.getSummary()!=null) {
                 params.add(book.getSummary());
-                query.append(", `summary` = ?");
-            }if(book.getPubYear()>0) {
+                query.append(", `summary` = ? ");
+            //}if(book.getPubYear()>0) {
                 params.add(book.getPubYear());
-                query.append(", `year_published` = ?");
-            }if(book.getIsbn()!=null) {
+                query.append(", `year_published` = ? ");
+            //}if(book.getIsbn()!=null) {
                 params.add(book.getIsbn());
-                query.append(", `isbn` = ?");
-            }
-            query.append("WHERE `id` = ?");
+                query.append(", `isbn` = ? ");
+            //}
+            query.append("WHERE `id` = ? ");
             params.add(bookID);
             getResultSet(params, query.toString());
 
@@ -97,21 +97,20 @@ public class BookTableGateway {
             if(book.getSummary()!=null) {
                 params.add(book.getSummary());
                 filledFields.add("`summary`");
-            }if(book.getPubYear()>0) {
+            }if(book.getPubYear() != null) {
                 params.add(book.getPubYear());
                 filledFields.add("`year_published`");
             }if(book.getIsbn()!=null) {
                 params.add(book.getIsbn());
                 filledFields.add("`isbn`");
             }
-            String query = "INSERT INTO `Book`("+String.join(", ",filledFields)+") VALUES(" + String.join(", ", Collections.nCopies(params.size()-1,"?"))+")";
+            String query = "INSERT INTO `Book`("+String.join(", ",filledFields)+") VALUES(" + String.join(", ", Collections.nCopies(params.size(),"?"))+")";
+                    //"SELECT LAST_INSERT_ID()";
             getResultSet(params,query);
-            closeConnection();
-            params = new ArrayList<>();
-            params.add(book.getTitle());
-            getResultSet(params,"SELECT * FROM `Book` where `title` = ?");
+            rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
             rs.next();
-            id = rs.getInt("id");
+            id = rs.getInt(1);
+            closeConnection();
         } catch (Exception e){
             e.printStackTrace();
         } finally {

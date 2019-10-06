@@ -27,6 +27,7 @@ public class MenuController implements Initializable {
 
     // log4j logger definition
     private static Logger logger = LogManager.getLogger(MenuController.class);
+    private Book book;
 
     @FXML
     private BorderPane borderPane;
@@ -52,6 +53,7 @@ public class MenuController implements Initializable {
 
     @FXML
     void clickMenuItem(ActionEvent event){
+        book = new Book();
         if(event.getSource() == closeAppMenuItem) {
             logger.info("Exit menu item clicked.");
             Platform.exit();
@@ -62,6 +64,13 @@ public class MenuController implements Initializable {
             logger.info("New Book menu item clicked");
             switchView(ViewType.BOOKDETAILVIEW);
         }
+    }
+
+    public void setDetailView(Book book){
+        //this.bookID = bookID;
+        this.book = book;
+        logger.info("Switching to detail view of book");
+        switchView(ViewType.BOOKDETAILVIEW);
     }
 
     public void switchView(ViewType viewType){
@@ -75,8 +84,12 @@ public class MenuController implements Initializable {
                 break;
             case BOOKDETAILVIEW:
                 view = "BookDetailView.fxml";
-                controller = new BookDetailController(BookTableGateway.read(BookListController.getBookIndex()));
+                controller = new BookDetailController(BookTableGateway.read(book.getBookID()));
                 logger.info("Switching to BookDetailView");
+                break;
+            case NEWBOOKVIEW:
+                view = "BookDetailView.fxml";
+                controller = new BookDetailController(new Book());
                 break;
         }
         try {

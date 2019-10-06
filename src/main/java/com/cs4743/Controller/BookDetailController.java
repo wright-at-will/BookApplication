@@ -35,12 +35,10 @@ public class BookDetailController implements Initializable, MasterController {
     }
     // format output for the detail view
     public void createViewDetails(){
-        if(book != null || book.getBookID() > 0) {
-            book.getTitle();
-            System.out.println(book.toString());
+        if(book != null && book.getBookID() > 0) {
             titleField.setText(book.getTitle());
             summaryArea.setText(book.getSummary());
-            yearField.setText(book.getPubYear()+"");
+            yearField.setText(book.getPubYear());
             isbnField.setText(book.getIsbn());
         }
         titleField.setPromptText("Title");
@@ -57,8 +55,10 @@ public class BookDetailController implements Initializable, MasterController {
                 summaryArea.getText(),
                 yearField.getText(),
                 isbnField.getText());
-        if(!book.save(titleField.getText(),summaryArea.getText(),yearField.getText(),isbnField.getText()))
+        if(!book.save(titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText()))
             logger.error("Save failed");
+        else
+            logger.info("Save passed with book id: " + book.getBookID());
     }
 
     @Override

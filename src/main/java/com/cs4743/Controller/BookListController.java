@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
@@ -33,7 +34,17 @@ public class BookListController implements Initializable, MasterController {
     @FXML
     private GridPane bookListGrid;
     @FXML
-    ListView<String> bookList = new ListView<>();
+    ListView<Book> bookList = new ListView<>();
+    @FXML
+    private Button deleteButton;
+
+    @FXML
+    private void deleteRecord(){
+        Book selectedBook = bookList.getSelectionModel().getSelectedItem();
+        logger.info("Selected book: {} bookID: {}", selectedBook.getTitle(), selectedBook.getBookID());
+        //btg.delete(selectedBook);
+        //bookList.getItems().remove(selectedBook);
+    }
 
     BookTableGateway btg = new BookTableGateway();
 
@@ -52,7 +63,7 @@ public class BookListController implements Initializable, MasterController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //ObservableList<Book> books;
-        ObservableList<String> books = FXCollections.observableArrayList(btg.bookList());
+        ObservableList<Book> books = FXCollections.observableArrayList(btg.bookList());
         // initialize the books in the listView
         bookList.setItems(books);
         // detect mouse double click on each of the cells in the listView
@@ -67,13 +78,24 @@ public class BookListController implements Initializable, MasterController {
                         logger.error("Clicked empty area on the list view");
                     } else {
                         logger.info("Clicked book located at position: " + viewListIndex);
-                        setBookIndex(viewListIndex+1);
-                        MenuController.getInstance().switchView(ViewType.BOOKDETAILVIEW);
+                        //setBookIndex(viewListIndex+1);
+                        MenuController.getInstance().setDetailView(bookList.getSelectionModel().getSelectedItem());
+                        //MenuController.getInstance().switchView(ViewType.BOOKDETAILVIEW);
                     }
                 }
 
             }
 
+        });
+
+        deleteButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Book selectedBook = bookList.getSelectionModel().getSelectedItem();
+                logger.info("Selected book: {} bookID: {}", selectedBook.getTitle(), selectedBook.getBookID());
+                btg.delete(selectedBook);
+                bookList.getItems().remove(selectedBook);
+            }
         });
 
     }
