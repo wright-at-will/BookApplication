@@ -49,33 +49,75 @@ public class BookTableGateway {
             };
 
     //TODO Create should create the query inside it according to the parts of the book that have been filled out
-    public static void create(Book book){
+    public static int update(Book book){
+        int bookID = book.getBookID();
+        if(bookID < 1){
+            return create(book);
+        }
         ArrayList<String> filledFields = new ArrayList<>();
         ArrayList<Object> params = new ArrayList<>();
         StringBuilder query = new StringBuilder("UPDATE `Book` SET");
         try {
-            if(book.getTitle()!=null) {
+            //Title cannot be null
                 params.add(book.getTitle());
                 query.append("`title` = ?");
-            }if(book.getSummary()!=null) {
+            if(book.getSummary()!=null) {
                 params.add(book.getSummary());
-                query.append("`summary` = ?");
+                query.append(", `summary` = ?");
             }if(book.getPubYear()>0) {
                 params.add(book.getPubYear());
-                query.append("`year_published` = ?");
+                query.append(", `year_published` = ?");
             }if(book.getIsbn()!=null) {
                 params.add(book.getIsbn());
-                query.append("`isbn` = ?");
+                query.append(", `isbn` = ?");
             }
-            params.add(book.getBookID());
             query.append("WHERE `id` = ?");
+            params.add(bookID);
             getResultSet(params, query.toString());
+
         } catch (Exception e){
             e.printStackTrace();
+            bookID = 0;
         } finally {
            closeConnection();
         }
-        //return rs;
+        return bookID;
+    }
+
+    private static int create(Book book){
+        int id = 0;
+        ResultSet rs = null;
+        try{
+            //should be called when the id is 0
+            //Title cannot be null
+            ArrayList<String> filledFields = new ArrayList<>();
+            ArrayList<Object> params = new ArrayList<>();
+            params.add(book.getTitle());
+            filledFields.add("`title`");
+            if(book.getSummary()!=null) {
+                params.add(book.getSummary());
+                filledFields.add("`summary`");
+            }if(book.getPubYear()>0) {
+                params.add(book.getPubYear());
+                filledFields.add("`year_published`");
+            }if(book.getIsbn()!=null) {
+                params.add(book.getIsbn());
+                filledFields.add("`isbn`");
+            }
+            String query = "INSERT INTO `Book`("+String.join(", ",filledFields)+") VALUES(" + String.join(", ", Collections.nCopies(params.size()-1,"?"))+")";
+            getResultSet(params,query);
+            closeConnection();
+            params = new ArrayList<>();
+            params.add(book.getTitle());
+            getResultSet(params,"SELECT * FROM `Book` where `title` = ?");
+            rs.next();
+            id = rs.getInt("id");
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+        return id;
     }
 
     public static Book read(int bookID){
@@ -83,8 +125,9 @@ public class BookTableGateway {
         Book book = null;
         try {
             if(bookID < 1) {
-                logger.error("Bad book id given to read");
-                throw new SQLException("Bad book id given to read");
+                logger.info("Creating new book object");
+                return new Book();
+                //throw new SQLException("Bad book id given to read");
             }
             params.add(bookID);
             getResultSet(params,queries[BOOK]);
@@ -97,34 +140,7 @@ public class BookTableGateway {
         return book;
     }
 
-    public static void update(Book book){
-        ResultSet rs = null;
-        try{
-            ArrayList<String> filledFields = new ArrayList<>();
-            ArrayList<Object> params = new ArrayList<>();
-                if(book.getBookID()>0){
-                    params.add(book.getBookID());
-                    filledFields.add("`id`");
-                }if(book.getTitle()!=null) {
-                    params.add(book.getTitle());
-                    filledFields.add("`title`");
-                }if(book.getSummary()!=null) {
-                    params.add(book.getSummary());
-                    filledFields.add("`summary`");
-                }if(book.getPubYear()>0) {
-                    params.add(book.getPubYear());
-                    filledFields.add("`year_published`");
-                }if(book.getIsbn()!=null) {
-                    params.add(book.getIsbn());
-                    filledFields.add("`isbn`");
-                }
-                String query = "INSERT INTO `Book`("+String.join(", ",filledFields)+") VALUES(" + String.join(", ", Collections.nCopies(params.size(),"?"))+")";
-        } catch (Exception e){
-            e.printStackTrace();
-        } finally {
-            closeConnection();
-        }
-    }
+
 
     public void delete(Book book){
         ArrayList<Object> params = new ArrayList<>();

@@ -1,8 +1,5 @@
 package com.cs4743.Controller;
 
-import com.cs4743.Model.Book;
-import com.cs4743.Services.BookTableGateway;
-import com.mysql.cj.jdbc.MysqlDataSource;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,9 +8,6 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
 
 /**
  * JavaFX App
@@ -37,7 +31,7 @@ public class App extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getClassLoader().getResource("com/cs4743/view/" + fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getClassLoader().getResource("com/cs4743/View/" + fxml + ".fxml"));
         // sets the primary controller as the menu controller
         fxmlLoader.setController(controller);
         return fxmlLoader.load();

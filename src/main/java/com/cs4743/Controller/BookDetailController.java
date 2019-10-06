@@ -30,13 +30,17 @@ public class BookDetailController implements Initializable, MasterController {
 
     private Book book;
 
-
+    public BookDetailController(Book book){
+        this.book = book;
+    }
     // format output for the detail view
     public void createViewDetails(){
         if(book != null || book.getBookID() > 0) {
+            book.getTitle();
+            System.out.println(book.toString());
             titleField.setText(book.getTitle());
             summaryArea.setText(book.getSummary());
-            yearField.setText("" + book.getPubYear());
+            yearField.setText(book.getPubYear()+"");
             isbnField.setText(book.getIsbn());
         }
         titleField.setPromptText("Title");
@@ -48,29 +52,20 @@ public class BookDetailController implements Initializable, MasterController {
     @FXML
     public void clickSaveButton(ActionEvent event){
         logger.info("Save button was clicked");
-        book.setIsbn(isbnField.getText());
-        book.setPubYear(yearField.getText());
-        book.setSummary(summaryArea.getText());
-        book.setTitle(titleField.getText());
-        book.save();
+        logger.info("title: {} \nsummary: {} \nyear:  {} \nisbn: {} \n",
+                titleField.getText(),
+                summaryArea.getText(),
+                yearField.getText(),
+                isbnField.getText());
+        if(!book.save(titleField.getText(),summaryArea.getText(),yearField.getText(),isbnField.getText()))
+            logger.error("Save failed");
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        viewBook(BookListController.getBookIndex());
-        //viewBook(0);
         createViewDetails();
     }
 
-    private void setBook(Book book){
-        this.book = book;
-        createViewDetails();
-    }
 
-    public void viewBook(int bookID){
-        if(bookID != 0)
-            setBook(BookTableGateway.read(bookID));
-        else
-            setBook(new Book());
-    }
+
 }

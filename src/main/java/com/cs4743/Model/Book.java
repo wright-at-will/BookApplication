@@ -41,46 +41,61 @@ public class Book {
         isbn = rs.getString("isbn");
     }
 
-    private void setBookID(int bookID){ this.bookID = bookID; };
     public int getBookID(){ return bookID; }
     public String getTitle() {
         return title;
     }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getSummary() {
         return summary;
     }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
     public int getPubYear() {
         return pubYear;
-    }
-
-    public void setPubYear(String pubYear) {
-        try {
-            this.pubYear = Integer.parseInt(pubYear);
-        } catch (Exception e){
-
-        }
     }
     public String getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
+    //Save handles all the setters at once
+    public boolean save(String title, String summary, String year, String isbn){
+        if(saveTitle(title) && saveSummary(summary) && saveYear(year) && saveIsbn(isbn)) {
+            bookID = BookTableGateway.update(this);
+            if (bookID == 0)
+                return false;
+            return true;
+        }
+        return false;
     }
 
-    public void save(){
-        System.out.println(this);
-        BookTableGateway.update(this);
+    private boolean saveTitle(String title){
+        if(title == null)
+            return false;
+        this.title = title;
+        return true;
+    }
+    private boolean saveSummary(String summary){
+        if(summary == null)
+            return true;
+        if(summary.length() > 65535)
+            return false;
+        this.summary = summary;
+        return true;
+    }
+    private boolean saveYear(String year){
+       if(year == null)
+           return true;
+       try{
+           this.pubYear = Integer.parseInt(year);
+       } catch (Exception e){
+           return false;
+       }
+       return true;
+    }
+    private boolean saveIsbn(String isbn){
+        if(isbn == null)
+            return true;
+        if(isbn.length() > 13)
+            return false;
+        return true;
     }
 
     @Override

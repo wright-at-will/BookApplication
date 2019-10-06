@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 
+import com.cs4743.Model.Book;
+import com.cs4743.Services.BookTableGateway;
 import com.cs4743.View.ViewType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -73,7 +75,7 @@ public class MenuController implements Initializable {
                 break;
             case BOOKDETAILVIEW:
                 view = "BookDetailView.fxml";
-                controller = new BookDetailController();
+                controller = new BookDetailController(BookTableGateway.read(BookListController.getBookIndex()));
                 logger.info("Switching to BookDetailView");
                 break;
         }
@@ -86,7 +88,7 @@ public class MenuController implements Initializable {
     }
 
     private void loadScreen(String view, MasterController controller) throws IOException {
-        URL url = this.getClass().getClassLoader().getResource("com/cs4743/view/" +view);
+        URL url = this.getClass().getClassLoader().getResource("com/cs4743/View/" +view);
         FXMLLoader loader = new FXMLLoader(url);
         loader.setController(controller);
         Parent viewNode = loader.load();
