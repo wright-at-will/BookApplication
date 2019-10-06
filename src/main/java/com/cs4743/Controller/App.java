@@ -1,5 +1,8 @@
-package com.cs4743;
+package com.cs4743.Controller;
 
+import com.cs4743.Model.Book;
+import com.cs4743.Services.BookTableGateway;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +11,9 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * JavaFX App
