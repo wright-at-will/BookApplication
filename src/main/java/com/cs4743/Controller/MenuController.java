@@ -1,10 +1,13 @@
-package com.cs4743;
+package com.cs4743.Controller;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 
+import com.cs4743.Model.Book;
+import com.cs4743.Services.BookTableGateway;
+import com.cs4743.View.ViewType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -24,6 +27,7 @@ public class MenuController implements Initializable {
 
     // log4j logger definition
     private static Logger logger = LogManager.getLogger(MenuController.class);
+    private Book book;
 
     @FXML
     private BorderPane borderPane;
@@ -42,52 +46,66 @@ public class MenuController implements Initializable {
 
     @FXML
     private MenuItem showBookListMenuItem;
-
     @FXML
     private MenuItem closeAppMenuItem;
+    @FXML
+    private MenuItem newBookMenuItem;
 
-    // clickMenuItem provides control for the different menu options
     @FXML
     void clickMenuItem(ActionEvent event){
+        book = new Book();
         if(event.getSource() == closeAppMenuItem) {
             logger.info("Exit menu item clicked.");
             Platform.exit();
         }else if(event.getSource() == showBookListMenuItem) {
             logger.info("Book List menu item clicked.");
             switchView(ViewType.BOOKLISTVIEW);
+        } else if(event.getSource() == newBookMenuItem) {
+            logger.info("New Book menu item clicked");
+            switchView(ViewType.BOOKDETAILVIEW);
         }
     }
 
+    public void setDetailView(Book book){
+        //this.bookID = bookID;
+        this.book = book;
+        logger.info("Switching to detail view of book");
+        switchView(ViewType.BOOKDETAILVIEW);
+    }
 
-    // switchView allows the other controllers to switch the view
     public void switchView(ViewType viewType){
-        String viewString = "";
+        String view = "";
         MasterController controller = null;
         switch(viewType){
             case BOOKLISTVIEW:
-                viewString = "BookListView.fxml";
+                view = "BookListView.fxml";
                 controller = new BookListController();
                 logger.info("Switching to BookListView");
-                if(controller == null){
-                    logger.error("Could not switch controllers");
-                    Platform.exit();
-                }
                 break;
             case BOOKDETAILVIEW:
-                viewString = "BookDetailView.fxml";
-                controller = new BookDetailController();
+                view = "BookDetailView.fxml";
+                controller = new BookDetailController(BookTableGateway.read(book.getBookID()));
+                logger.info("Switching to BookDetailView");
+                break;
+            case NEWBOOKVIEW:
+                view = "BookDetailView.fxml";
+                controller = new BookDetailController(new Book());
                 break;
         }
         try {
-            URL url = this.getClass().getClassLoader().getResource("com/cs4743/view/" +viewString);
-            FXMLLoader loader = new FXMLLoader(url);
-            loader.setController(controller);
-            Parent viewNode = loader.load();
-            borderPane.setCenter(viewNode);
+            loadScreen(view, controller);
         } catch (IOException e){
             e.printStackTrace();
             logger.error("IOException");
         }
+    }
+
+    private void loadScreen(String view, MasterController controller) throws IOException {
+        URL url = this.getClass().getClassLoader().getResource("com/cs4743/View/" +view);
+        FXMLLoader loader = new FXMLLoader(url);
+        loader.setController(controller);
+        Parent viewNode = loader.load();
+        borderPane.setCenter(viewNode);
     }
 
     @Override
