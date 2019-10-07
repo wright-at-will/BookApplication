@@ -10,9 +10,10 @@
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
-                <Menu mnemonicParsing="false" text="Book List">
+                <Menu mnemonicParsing="false" text="Books">
                     <items>
                         <MenuItem fx:id="showBookListMenuItem" mnemonicParsing="false" onAction="#clickMenuItem" text="Show Book List" />
+                  <MenuItem fx:id="newBookMenuItem" mnemonicParsing="false" onAction="#clickMenuItem" text="Add Book" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Quit">
