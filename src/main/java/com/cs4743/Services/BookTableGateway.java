@@ -206,4 +206,39 @@ public class BookTableGateway {
 
         }
     }
+
+    public static void insertAuditTrailEntry (int bookID, String entryMessage) throws SQLException {
+        String query = "INSERT INTO book_audit_trail (book_id, entry_msg)  VALUES (?, ?)";
+        PreparedStatement ps = BookTableGateway.getInstance().getConnection().prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+        ps.setInt(1, bookID);
+        ps.setString(2, entryMessage);
+        ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        rs.next();
+    }
+
+    public List<AuditTrailEntry> getAuditTrail(int bookId) {
+        List<AuditTrailEntry> auditTrail = new ArrayList<AuditTrailEntry>();
+        Statement stmt = null;
+        try{
+            String query = "SELECT * FROM book_audit_trail ORDER BY date_added ASC ";
+            stmt = this.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            while(rs.next()){
+                if (rs.getInt("book_id") == bookId){
+                    AuditTrailEntry atr = new AuditTrailEntry();
+                    atr.setId(rs.getInt("id"));
+                    atr.setDateAdded(rs.getTimestamp("date_added").toLocalDateTime());
+                    atr.setMessage(rs.getString("entry_msg"));
+                    auditTrail.add(atr);
+                }
+            }
+        } catch(SQLException err){
+            System.out.println(err.getMessage());
+        }
+
+        return auditTrail;
+    }
 }

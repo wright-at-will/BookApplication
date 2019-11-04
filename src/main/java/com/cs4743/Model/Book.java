@@ -101,6 +101,13 @@ public class Book {
         return true;
     }
 
+    public void setYearPublished(int pubYear) {
+        this.pubYear = pubYear;
+    }
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
     @Override
     public String toString(){
         return title;
