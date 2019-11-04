@@ -15,7 +15,6 @@ public class Book {
 
     public Book(){
         this.bookID = 0;
-
     }
 
     public Book(int bookID, String title, String summary, int pubYear, String isbn){
