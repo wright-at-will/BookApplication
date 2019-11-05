@@ -57,7 +57,9 @@ public class BookDetailController implements Initializable, MasterController {
 
     // format output for the detail view
     public void createViewDetails(){
+        auditTrailButton.setDisable(true);
         if(book != null && book.getBookID() > 0) {
+            auditTrailButton.setDisable(false);
             titleField.setText(book.getTitle());
             summaryArea.setText(book.getSummary());
             yearField.setText(Integer.toString(book.getPubYear()));
@@ -75,7 +77,6 @@ public class BookDetailController implements Initializable, MasterController {
         yearField.setPromptText("Year Published");
         isbnField.setPromptText("ISBN");
         //publisherComboBox.setValue(publisherNameList.get(1));
-        auditTrailButton.setDisable(true);
     }
 
     @FXML
