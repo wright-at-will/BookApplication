@@ -8,7 +8,7 @@ public class AuditTrailEntry {
     public LocalDateTime dateAdded;
     public String message;
 
-    public AuditTrailEntry (){
+    public AuditTrailEntry() {
         id = this.getId();
         dateAdded = this.getDateAdded();
         message = this.getMessage();

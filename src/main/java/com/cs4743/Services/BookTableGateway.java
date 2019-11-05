@@ -2,6 +2,7 @@ package com.cs4743.Services;
 
 import com.cs4743.Controller.MenuController;
 import com.cs4743.Model.AuditTrailEntry;
+import com.cs4743.Services.BookException;
 import com.cs4743.Model.Book;
 import com.mysql.cj.jdbc.ConnectionGroup;
 import com.mysql.cj.jdbc.MysqlDataSource;
@@ -50,7 +51,7 @@ public class BookTableGateway {
                     "UPDATE `Book` SET" +
                             "`title`=?,`summary`=?,`year_published`=?,`isbn`=?" +
                             "WHERE `id` = ?",
-                    "SELECT * FROM Book WHERE id = ?",
+                    "SELECT * FROM Book WHERE id = {BookID} FOR UPDATE",
                     "SELECT id, title FROM Book",
                     "DELETE FROM `Book` WHERE `id` = ?"
             };
@@ -130,6 +131,10 @@ public class BookTableGateway {
         ArrayList<Object> params = new ArrayList<>();
         Book book = null;
         try {
+        	//pessimistic locking
+        	conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+        	//turn off auto commit
+        	conn.setAutoCommit(false);
             if(bookID < 1) {
                 logger.info("Creating new book object");
                 return new Book();
@@ -138,6 +143,10 @@ public class BookTableGateway {
             params.add(bookID);
             getResultSet(params,queries[BOOK]);
             book = new Book(rs);
+            //commit
+            //conn.commit();
+            //turn on auto commit
+            conn.setAutoCommit(true);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally{
@@ -259,27 +268,21 @@ public class BookTableGateway {
 	
 	public void saveBook(Book book) {
 		Statement stmt = null;
-		// gather the information from the book table
+
 		try{
 			String query = "select * from book";
 			stmt = this.getConnection().createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			try {
-				// no book exists. create a new book.
 				if(book.getBookID() == 0) {
-					// insert the book and save its id back to the book
-					int newId;
-					newId = create(book);
+					int newId = create(book);
 					book.setBookID(newId);
 				} else {	
-					// Iterate through the result set.
 					while(rs.next()) {
-						// check that the IDs and the Timestamps match
 						if (book.getBookID() == rs.getInt("id") && book.getLastModified().equals(rs.getTimestamp("last_modified").toLocalDateTime())){
 							logger.info("Timestamps match. Update successful.");
 							update(book);
 						}
-						// Timestamp difference detected. Notify user.
 						else if (book.getBookID() == rs.getInt("id") && !book.getLastModified().equals(rs.getTimestamp("last_modified").toLocalDateTime())){			
 							logger.info("Timestamps do not match.");
 							Alert a = new Alert(AlertType.ERROR); 
