@@ -60,7 +60,7 @@ public class BookDetailController implements Initializable, MasterController {
         if(book != null && book.getBookID() > 0) {
             titleField.setText(book.getTitle());
             summaryArea.setText(book.getSummary());
-            yearField.setText(book.getPubYear());
+            yearField.setText(Integer.toString(book.getPubYear()));
             isbnField.setText(book.getIsbn());
 
             for (int i = 0; i < trackPublisher.size(); i++) {
@@ -206,7 +206,7 @@ public class BookDetailController implements Initializable, MasterController {
     public Boolean checkForChanges() {
         if(book.getTitle().equals(titleField.getText()) &&
                 book.getSummary().equals(summaryArea.getText()) &&
-                Integer.toString(book.getYearPublished()).equals(yearField.getText()) &&
+                Integer.toString(book.getPubYear()) == (yearField.getText()) &&
                 book.getIsbn().equals(isbnField.getText())) {
             return false;
         } else {
