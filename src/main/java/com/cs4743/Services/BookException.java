@@ -1,4 +1,4 @@
-package Services;
+package com.cs4743.Services;
 
 public class BookException extends RuntimeException {
 

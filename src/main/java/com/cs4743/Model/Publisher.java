@@ -3,6 +3,8 @@ package com.cs4743.Model;
 import javafx.beans.property.SimpleStringProperty;
 import java.time.LocalDateTime;
 
+import com.cs4743.Services.PublisherTableGateway;
+
 public class Publisher {
 
     private int id;
@@ -13,21 +15,21 @@ public class Publisher {
 
     public Publisher(String name) {
         publisherName = new SimpleStringProperty();
-        setName(name);
+        setPublisherName(name);
         date_added = this.getDate_added();
     }
 
     public Publisher() {
         publisherName = new SimpleStringProperty();
-        setName("");
+        setPublisherName("");
         date_added = this.getDate_added();
     }
 
-    public String getName() {
+    public String getPublisherName() {
         return publisherName.get();
     }
 
-    public void setName(String name) {
+    public void setPublisherName(String name) {
         this.publisherName.set(name);
     }
 

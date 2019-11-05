@@ -1,4 +1,4 @@
-package Services;
+package com.cs4743.Services;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,7 +6,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import Model.Publisher;
+import com.cs4743.Model.Publisher;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -29,7 +29,7 @@ public class PublisherTableGateway extends Application{
                 publisher.setId(rs.getInt("id"));
                 publisher.setPublisherName(rs.getString("publisher_name"));
                 publisher.setDate_added(rs.getTimestamp("date_added").toLocalDateTime());
-                publisherList.add(pub);
+                publisherList.add(publisher);
             }
         } catch(SQLException err){
             System.out.println(err.getMessage());

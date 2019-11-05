@@ -1,13 +1,23 @@
 package com.cs4743.Controller;
 
 import com.cs4743.Model.Book;
+import com.cs4743.Model.Publisher;
 import com.cs4743.Services.BookTableGateway;
+import com.cs4743.View.ViewType;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 
 import java.net.URL;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.scene.control.TextArea;
@@ -64,13 +74,13 @@ public class BookDetailController implements Initializable, MasterController {
         summaryArea.setPromptText("Summary");
         yearField.setPromptText("Year Published");
         isbnField.setPromptText("ISBN");
-        publisherComboBox.setValue(trackPublisher.get(0));
+        publisherComboBox.setValue(publisherNameList.get(0));
         auditTrailButton.setDisable(true);
     }
 
     @FXML
     public void clickSaveButton(ActionEvent event) throws SQLException {
-        if (book.getId() == 0) {
+        if (book.getBookID() == 0) {
             Book newBook = new Book();
             newBook.setTitle(summaryArea.getText());
             newBook.setSummary(summaryArea.getText());
@@ -81,37 +91,37 @@ public class BookDetailController implements Initializable, MasterController {
                 newBook.setYearPublished(1455);
             }
             newBook.setIsbn(isbnField.getText());
-            for (i = 0; i < trackPublisher.size(); i++){
+            for (int i = 0; i < trackPublisher.size(); i++){
                 if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
                     newBook.setPublisherId(trackPublisher.get(i).getId());
                     break;
                 }
             }
             newBook.save();
-            addAuditInfoNewBook(newBook.getId());
+            addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
         }
         // book exists
         else {
-            if(!book.getTitle().equals(titleTextField.getText())) {
-                addAuditInfoUpdateBook(book.getId() ,"Title", book.getTitle(), titleTextField.getText());
+            if(!book.getTitle().equals(titleField.getText())) {
+                addAuditInfoUpdateBook(book.getBookID() ,"Title", book.getTitle(), titleField.getText());
             }
-            if(!book.getSummary().equals(summaryTextField.getText())) {
-                addAuditInfoUpdateBook(book.getId() ,"Summary", book.getSummary(), summaryArea.getText());
+            if(!book.getSummary().equals(summaryArea.getText())) {
+                addAuditInfoUpdateBook(book.getBookID() ,"Summary", book.getSummary(), summaryArea.getText());
             }
-            if(book.getYearPublished() != (Integer.parseInt(yearPublishedTextField.getText()))) {
-                addAuditInfoUpdateBookInteger(book.getId() ,"Year Published", book.getYearPublished(), Integer.parseInt(yearPublishedTextField.getText()));
+            if(book.getPubYear() != (Integer.parseInt(yearField.getText()))) {
+                addAuditInfoUpdateBookInteger(book.getBookID() ,"Year Published", book.getPubYear(), Integer.parseInt(yearField.getText()));
             }
-            if(!book.getIsbn().equals(isbnTextField.getText())) {
-                addAuditInfoUpdateBook(book.getId() ,"Isbn", book.getIsbn(), isbnTextField.getText());
+            if(!book.getIsbn().equals(isbnField.getText())) {
+                addAuditInfoUpdateBook(book.getBookID() ,"Isbn", book.getIsbn(), isbnField.getText());
             }
 
-            book.setId(book.getId());
+            book.setBookID(book.getBookID());
             book.setTitle(titleField.getText());
             book.setSummary(summaryArea.getText());
             book.setYearPublished(Integer.parseInt(yearField.getText()));
             book.setIsbn(isbnField.getText());
-            for (i = 0; i < trackPublisher.size(); i++){
+            for (int i = 0; i < trackPublisher.size(); i++){
                 if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
                     book.setPublisherId(trackPublisher.get(i).getId());
                     break;
@@ -126,69 +136,41 @@ public class BookDetailController implements Initializable, MasterController {
 
     @FXML
     void clickedAuditTrail(ActionEvent event) {
-        if(event.getSource() == auditTrailButton){
-            logger.info("Selected auditTrailButton");
-            if (MenuController.previousScene.equals("/View/BookDetailView.fxml") && BookListController.detailController.checkbook()
-             && BookListController.detailController.checkForChanges()) {
-                logger.info("Check Changes existing book (addbookview clicked)");
-                Optional<ButtonType> result = MenuController.alert.showAndWait();
+        Optional<ButtonType> result = MenuController.alert.showAndWait();
+        if(event.getSource() == auditTrailButton && BookListController.bdc.checkbook()
+             && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
+                logger.info("Selected auditTrailButton");
+
                 if(result.get() == MenuController.yes){
                     logger.info("Yes was pressed");
-                    BookListController.detailController.fireSave();
-                    switchAuditTrailView();
+                    BookListController.bdc.fireSave();
+                    result = switchAuditTrailView();
                 }
                 else if (result.get() == MenuController.no){
                     logger.info("No was pressed");
-                    switchAuditTrailView();
+                    result = switchAuditTrailView();
                 }
                 else if (result.get() == MenuController.cancel)
                     logger.info("Cancel was pressed");
-            }
-            else {
-                logger.info("No changes found");
-                MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW);
-                BookDetailController.verifySave = false;
-            }
-        }
-        else {
-             if(BookListController.detailController.checkForChangesNewBook()) {
-                 logger.info("Check Changes new book (auditTrailButton clicked)");
-                 Optional<ButtonType> result = MenuController.alert.showAndWait();
-                 if (result.get() == MenuController.yes) {
-                     logger.info("Yes was pressed");
-                     BookListController.detailController.fireSave();
-                     switchAuditTrailView();
-                 }
-                 // if the user clicks no, forego saving and navigate the user to their destination
-                 else if (result.get() == MenuController.no) {
-                     logger.info("No was pressed");
-                     switchAuditTrailView();
-                 }
-                 // if the user hits cancel, close the alert and return them to their screen
-                 else if (result.get() == MenuController.cancel)
-                     logger.info("Cancel was pressed");
-             }
-             // no changes were made to the new book
-             else {
-                 logger.info("No changes found on new book model");
-                 MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW);
-                 BookDetailController.verifySave = false;
-             }
-        }
-        // Scene did not have save functionality. Program continues as normal
-        else {
-            logger.info("Previous page was not able to accept changes");
+                } else {
+	                logger.info("No changes found");
+                    result = switchAuditTrailView();
+                }   
             MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW);
-        }
-            new MasterController();
-            MasterController controller = MenuController.getInstance(0);
-            controller.switchView(ViewType.AUDITTRAILVIEW);
         }
 
     // launch save button
     public void fireSave(){
         saveButton.fire();
     }
+    
+	public Boolean checkSelection() {
+		if(this.book.getBookID() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
     // updates the list of publishers on the detail view from the database list
     public void updatePubisherLists(List<Publisher> publisher){
@@ -246,17 +228,17 @@ public class BookDetailController implements Initializable, MasterController {
 
     // check to see if the selection is a new book
     public Boolean checkbook() {
-        if(this.book.getId() == 0) {
+        if(this.book.getBookID() == 0) {
             return false;
         } else {
             return true;
         }
     }
 
-    public void switchAuditTrailView() {
+    public Optional<ButtonType> switchAuditTrailView() {
         MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW);
-        BookDetailController.verifySave = false;
-        result = null;
+        BookDetailController.verifyUserSaved = false;
+        return null;
     }
 
     @Override

@@ -2,9 +2,11 @@ package com.cs4743.Controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
-
+import com.cs4743.Model.AuditTrailEntry;
 import com.cs4743.Model.Book;
 import com.cs4743.Services.BookTableGateway;
 import com.cs4743.View.ViewType;
@@ -16,7 +18,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +30,7 @@ public class MenuController implements Initializable {
 
     // define MenuController instance for the Singleton class
     private static MenuController instance = null;
+    public static BookTableGateway btg = new BookTableGateway();
 
     // log4j logger definition
     private static Logger logger = LogManager.getLogger(MenuController.class);
@@ -105,12 +111,12 @@ public class MenuController implements Initializable {
 
             if (BookListController.bdc == null) {
                 logger.info("Book Detail Controller is null");
-                List<Book> books = BookTableGateway.getInstance().getBooks();
-                BookListController.setSelection(books.get(0));
+                List<Book> books = BookTableGateway.getInstance().bookList();
+                BookListController.setSelected(books.get(0));
                 switchView(ViewType.BOOKDETAILVIEW);
             }
 
-            if (saveMenuResult.get == yes) {
+            if (saveMenuResult.get() == yes) {
                 logger.info("Yes was pressed");
                 BookListController.bdc.fireSave();
                 saveMenuResult = addBookView();
@@ -126,9 +132,9 @@ public class MenuController implements Initializable {
         }
     }
 
-    private ButtonType stopBookTableGateway() {
+    private Optional<ButtonType> stopBookTableGateway() {
         try {
-            btg.stop();
+            btg.closeConnection();
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -136,15 +142,15 @@ public class MenuController implements Initializable {
         return null;
     }
 
-    private ButtonType switchBookListView() {
+    private Optional<ButtonType> switchBookListView() {
         switchView(ViewType.BOOKLISTVIEW);
-        BookDetailController.verifySave = false;
+        BookDetailController.verifyUserSaved = false;
         return null;
     }
 
-    private ButtonType addBookView() {
-        switchView(ViewType.ADDBOOKVIEW);
-        BookDetailController.verifySave = false;
+    private Optional<ButtonType> addBookView() {
+        switchView(ViewType.NEWBOOKVIEW);
+        BookDetailController.verifyUserSaved = false;
         return null;
     }
 

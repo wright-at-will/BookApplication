@@ -6,9 +6,8 @@ import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import Model.AuditTrailEntry;
-import View.ViewType;
+import com.cs4743.Model.AuditTrailEntry;
+import com.cs4743.View.ViewType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,7 +50,7 @@ public class AuditTrailController implements Initializable, MasterController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         String bookTitle = BookListController.getSelection().getTitle();
-        bookTitleLabel.setText(title);
+        bookTitleLabel.setText(bookTitle);
         auditTrailListLog.setEditable(true);
         log.info(trackChanges);
         auditTrailListLog.setItems(trackChanges);

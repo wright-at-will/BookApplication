@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
@@ -31,7 +32,7 @@ public class BookListController implements Initializable, MasterController {
     private static int bookIndex = 0;
     private static Logger logger = LogManager.getLogger(BookListController.class);
     public static Book emptyBook, selected;
-    public static ObservableList<Book> bookListHistory = FXCollections.observableArrayList(btg.bookList());
+    public static ObservableList<Book> bookListHistory = FXCollections.observableArrayList();
     public static BookDetailController bdc;
     BookTableGateway btg = new BookTableGateway();
 
@@ -72,7 +73,7 @@ public class BookListController implements Initializable, MasterController {
         // initialize the books in the listView
         bookList.setEditable(true);
         bookList.setItems(bookListHistory);
-        booklist.setCellFactory(param -> new ListCell<Book>() {
+        bookList.setCellFactory(param -> new ListCell<Book>() {
             @Override
             protected void updateItem(Book item, boolean isEmpty) {
                 super.updateItem(item, isEmpty);
@@ -80,17 +81,15 @@ public class BookListController implements Initializable, MasterController {
                     setText(null);
                 else
                     setText(item.getTitle());
-
-                }
             }
         });
 
         // detect mouse double click on each of the cells in the listView
-        bookList.setOnMouseClicked(new EventHandler<MouseEvent>(){
+        bookList.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent click) {
                 if(click.getClickCount() == 2) {
-                    setSelected(bookList.getSelectionmodel().getSelectedItem());
+                    setSelected(bookList.getSelectionModel().getSelectedItem());
                     int viewListIndex = bookList.getSelectionModel().getSelectedIndex();
                     logger.info("The view list was double clicked");
                     if(viewListIndex == -1) {
@@ -124,7 +123,7 @@ public class BookListController implements Initializable, MasterController {
 
     private static MasterController controller = null;
 
-    public static MasterController getBookListController(List<Book> books) { controller = new BookListController(books); }
+    public static MasterController getBookListController(List<Book> books) { return controller = new BookListController(books); }
 
     public static MasterController getBookListController() { return controller; }
 
