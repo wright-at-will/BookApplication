@@ -1,6 +1,6 @@
 package com.cs4743.Model;
 
-import javafx.beans.property.SimpleStringProperty;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import com.cs4743.Services.PublisherTableGateway;
@@ -8,32 +8,26 @@ import com.cs4743.Services.PublisherTableGateway;
 public class Publisher {
 
     private int id;
-    private SimpleStringProperty publisherName;
-    public LocalDateTime date_added;
+    private String publisherName;
+    public Timestamp date_added;
 
     private PublisherTableGateway gateway;
 
-    public Publisher(String name) {
-        publisherName = new SimpleStringProperty();
-        setPublisherName(name);
-        date_added = this.getDate_added();
+    public Publisher(String publisherName, Timestamp date_added) {
+        publisherName = this.publisherName;
+        date_added = this.date_added;
     }
 
-    public Publisher() {
-        publisherName = new SimpleStringProperty();
-        setPublisherName("");
-        date_added = this.getDate_added();
-    }
 
     public String getPublisherName() {
-        return publisherName.get();
-    }
+		return publisherName;
+	}
 
-    public void setPublisherName(String name) {
-        this.publisherName.set(name);
-    }
+	public void setPublisherName(String publisherName) {
+		this.publisherName = publisherName;
+	}
 
-    public int getId() {
+	public int getId() {
         return id;
     }
 
@@ -41,20 +35,11 @@ public class Publisher {
         this.id = id;
     }
 
-    public SimpleStringProperty nameProperty() {
-        return publisherName;
-    }
+    public Timestamp getDate_added() {
+		return date_added;
+	}
 
-    public LocalDateTime getDate_added() {
-        return date_added;
-    }
-
-    public void setDate_added(LocalDateTime date_added) {
-        this.date_added = date_added;
-    }
-
-    @Override
-    public String toString() {
-        return publisherName.get();
-    }
+	public void setDate_added(Timestamp timestamp) {
+		this.date_added = timestamp;
+	}
 }
