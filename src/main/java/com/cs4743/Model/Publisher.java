@@ -13,7 +13,8 @@ public class Publisher {
 
     private PublisherTableGateway gateway;
 
-    public Publisher(String publisherName, Timestamp date_added) {
+    public Publisher(int id, String publisherName, Timestamp date_added) {
+    	id = this.id;
         publisherName = this.publisherName;
         date_added = this.date_added;
     }
