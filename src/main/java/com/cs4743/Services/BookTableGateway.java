@@ -104,7 +104,7 @@ public class BookTableGateway {
             if(book.getSummary()!=null) {
                 params.add(book.getSummary());
                 filledFields.add("`summary`");
-            }if(book.getPubYear() != null) {
+            }if(book.getPubYear() != 0) {
                 params.add(book.getPubYear());
                 filledFields.add("`year_published`");
             }if(book.getIsbn()!=null) {

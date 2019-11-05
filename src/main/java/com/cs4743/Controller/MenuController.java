@@ -22,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.BorderPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -167,7 +168,8 @@ public class MenuController implements Initializable {
         switch(viewType){
             case BOOKLISTVIEW:
                 view = "BookListView.fxml";
-                controller = new BookListController();
+                List<Book> books = BookTableGateway.getInstance().bookList();
+                controller = BookListController.getBookListController(books);
                 logger.info("Switching to BookListView");
                 break;
             case BOOKDETAILVIEW:

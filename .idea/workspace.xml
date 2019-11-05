@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="feacd014-0838-4318-9364-95be2268cd3b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cs4743/Controller/AuditTrailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cs4743/Controller/AuditTrailController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cs4743/Controller/BookDetailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cs4743/Controller/BookDetailController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cs4743/Controller/MenuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cs4743/Controller/MenuController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cs4743/Model/Book.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cs4743/Model/Book.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cs4743/Model/Publisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cs4743/Model/Publisher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cs4743/Services/BookException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cs4743/Services/BookException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cs4743/Services/BookTableGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cs4743/Services/BookTableGateway.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cs4743/Services/PublisherTableGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cs4743/Services/PublisherTableGateway.java" afterDir="false" />
-    </list>
+    <list default="true" id="feacd014-0838-4318-9364-95be2268cd3b" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -246,7 +236,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1572914329145" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1572914715554" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
