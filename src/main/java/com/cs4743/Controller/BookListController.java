@@ -1,7 +1,6 @@
 package com.cs4743.Controller;
 
 import com.cs4743.Model.Book;
-import com.cs4743.Model.BookListIndex;
 import com.cs4743.Services.BookTableGateway;
 import com.cs4743.View.ViewType;
 import javafx.collections.FXCollections;
@@ -115,7 +114,7 @@ public class BookListController implements Initializable, MasterController {
         });
     }
 
-    public String toString() { return selected.getTitle(); }
+    //public String toString() { return selected.getTitle(); }
 
     public static void setSelected(Book book) { selected = book; }
 

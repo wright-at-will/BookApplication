@@ -46,8 +46,8 @@ public class BookDetailController implements Initializable, MasterController {
 
     public static boolean verifyUserSaved = false;
 
-    ObservableList<Publisher> trackPublisher = FXCollections.observableArrayList();
-    ObservableList<String> publisherNameList = FXCollections.observableArrayList();
+    //ObservableList<Publisher> trackPublisher = FXCollections.observableArrayList();
+    //ObservableList<String> publisherNameList = FXCollections.observableArrayList();
 
     BookDetailController() {}
 
@@ -63,23 +63,23 @@ public class BookDetailController implements Initializable, MasterController {
             yearField.setText(Integer.toString(book.getPubYear()));
             isbnField.setText(book.getIsbn());
 
-            for (int i = 0; i < trackPublisher.size(); i++) {
-                if (trackPublisher.get(i).getId() == book.getPublisherId()) {
-                    publisherComboBox.setValue(trackPublisher.get(i).getPublisherName());
-                    break;
-                }
-            }
+      //      for (int i = 0; i < trackPublisher.size(); i++) {
+      //          if (trackPublisher.get(i).getId() == book.getPublisherId()) {
+       //             publisherComboBox.setValue(trackPublisher.get(i).getPublisherName());
+       //             break;
+       //         }
+            //    }
         }
         titleField.setPromptText("Title");
         summaryArea.setPromptText("Summary");
         yearField.setPromptText("Year Published");
         isbnField.setPromptText("ISBN");
-        publisherComboBox.setValue(publisherNameList.get(0));
+        //publisherComboBox.setValue(publisherNameList.get(1));
         auditTrailButton.setDisable(true);
     }
 
     @FXML
-    public void clickSaveButton(ActionEvent event) throws SQLException {
+    public void clickedSaveButton(ActionEvent event) throws SQLException {
         if (book.getBookID() == 0) {
             Book newBook = new Book();
             newBook.setTitle(summaryArea.getText());
@@ -91,12 +91,12 @@ public class BookDetailController implements Initializable, MasterController {
                 newBook.setYearPublished(1455);
             }
             newBook.setIsbn(isbnField.getText());
-            for (int i = 0; i < trackPublisher.size(); i++){
+            /*for (int i = 0; i < trackPublisher.size(); i++){
                 if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
                     newBook.setPublisherId(trackPublisher.get(i).getId());
                     break;
                 }
-            }
+            }*/
             newBook.save();
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
@@ -121,12 +121,12 @@ public class BookDetailController implements Initializable, MasterController {
             book.setSummary(summaryArea.getText());
             book.setYearPublished(Integer.parseInt(yearField.getText()));
             book.setIsbn(isbnField.getText());
-            for (int i = 0; i < trackPublisher.size(); i++){
-                if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
-                    book.setPublisherId(trackPublisher.get(i).getId());
-                    break;
-                }
-            }
+            //for (int i = 0; i < trackPublisher.size(); i++){
+            //    if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
+            //        book.setPublisherId(trackPublisher.get(i).getId());
+            //        break;
+            //    }
+            //}
             book.save();
             logger.info("Save button was clicked");
         }
@@ -135,7 +135,9 @@ public class BookDetailController implements Initializable, MasterController {
     }
 
     @FXML
-    void clickedAuditTrail(ActionEvent event) {
+    void clickedAuditTrailButton(ActionEvent event) {
+        logger.info("Clicked audit trail button");
+        /*
         Optional<ButtonType> result = MenuController.alert.showAndWait();
         if(event.getSource() == auditTrailButton && BookListController.bdc.checkbook()
              && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
@@ -157,6 +159,7 @@ public class BookDetailController implements Initializable, MasterController {
                     result = switchAuditTrailView();
                 }   
             MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW);
+        */
         }
 
     // launch save button
@@ -171,7 +174,7 @@ public class BookDetailController implements Initializable, MasterController {
 			return true;
 		}
 	}
-
+/*
     // updates the list of publishers on the detail view from the database list
     public void updatePubisherLists(List<Publisher> publisher){
         trackPublisher.clear();
@@ -180,7 +183,7 @@ public class BookDetailController implements Initializable, MasterController {
             trackPublisher.add(publisher.get(i));
         }
     }
-
+*/
     // adds audit info for a new book
     public void addAuditInfoNewBook(int bookID) throws SQLException{
         logger.info(bookID);

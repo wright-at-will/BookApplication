@@ -10,6 +10,7 @@ import com.cs4743.Model.AuditTrailEntry;
 import com.cs4743.Model.Book;
 import com.cs4743.Services.BookTableGateway;
 import com.cs4743.View.ViewType;
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -32,6 +33,7 @@ public class MenuController implements Initializable {
     // define MenuController instance for the Singleton class
     private static MenuController instance = null;
     public static BookTableGateway btg = new BookTableGateway();
+    private MasterController controller = null;
 
     // log4j logger definition
     private static Logger logger = LogManager.getLogger(MenuController.class);
@@ -49,11 +51,11 @@ public class MenuController implements Initializable {
     private Button auditTrailButton;
 
     //alert
-    public static Alert alert = createAlert();
-    public static ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-    public static ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
-    public static ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 
+    public ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+    public ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
+    public ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+    public Alert alert = createAlert();
 
     private MenuController(){ }
 
@@ -66,7 +68,7 @@ public class MenuController implements Initializable {
             instance = new MenuController();
         return instance;
     }
-
+    /*
     @FXML
     void clickMenuItem(ActionEvent event){
         book = new Book();
@@ -131,6 +133,103 @@ public class MenuController implements Initializable {
                 saveMenuResult = addBookView();
             }
         }
+    }*/
+
+
+    @FXML
+    void clickMenuItem(ActionEvent event){
+
+        /*
+        Received action from menu item
+        Check what screen we are on first and log that
+        */
+        logger.info(controller);
+        logger.info(event.getSource());
+        if(event.getSource()==closeAppMenuItem){
+                Platform.exit();
+        } else if(event.getSource() == showBookListMenuItem){
+            switchView(ViewType.BOOKLISTVIEW);
+        } else if(event.getSource() == newBookMenuItem){
+            switchView(ViewType.NEWBOOKVIEW);
+        }
+        /*
+        book = new Book();
+        Optional<ButtonType> saveMenuResult = alert.showAndWait();
+        if(event.getSource() == closeAppMenuItem && BookListController.bdc.checkSelection()
+                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
+            cleanup();
+        } else if(event.getSource() == showBookListMenuItem && BookListController.bdc.checkSelection()
+                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
+            logger.info("Book List menu item clicked.");
+            cleanup2();
+        } else if(event.getSource() == newBookMenuItem && BookListController.bdc.checkSelection()
+                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
+            cleanup3();
+        }
+        */
+
+    }
+
+    private void cleanup(){
+        Optional<ButtonType> saveMenuResult = alert.showAndWait();
+        logger.info("Close App menu Item clicked");
+        if (saveMenuResult.get() == yes) {
+            logger.info("Yes was pressed");
+            BookListController.bdc.fireSave();
+            saveMenuResult = stopBookTableGateway();
+        } else if (saveMenuResult.get() == no) {
+            logger.info("No was pressed");
+            saveMenuResult = stopBookTableGateway();
+        } else if (saveMenuResult.get() == cancel)
+            logger.info("Cancel was pressed");
+        else {
+            logger.info("No changes on the model were found");
+            saveMenuResult = stopBookTableGateway();
+        }
+    }
+
+    private void cleanup2() {
+        Optional<ButtonType> saveMenuResult = alert.showAndWait();
+        if (saveMenuResult.get() == yes) {
+            logger.info("Yes was pressed");
+            BookListController.bdc.fireSave();
+            saveMenuResult = switchBookListView();
+        } else if (saveMenuResult.get() == no) {
+            logger.info("No was pressed");
+            saveMenuResult = switchBookListView();
+        } else if (saveMenuResult.get() == cancel)
+            logger.info("Cancel was pressed");
+        else {
+            logger.info("No changes to the model were found");
+            saveMenuResult = switchBookListView();
+
+        }
+    }
+
+    private void cleanup3(){
+        logger.info("New Book menu item clicked");
+
+        if (BookListController.bdc == null) {
+            logger.info("Book Detail Controller is null");
+            List<Book> books = BookTableGateway.getInstance().bookList();
+            BookListController.setSelected(books.get(0));
+            switchView(ViewType.BOOKDETAILVIEW);
+        }
+        Optional<ButtonType> saveMenuResult = alert.showAndWait();
+
+        if (saveMenuResult.get() == yes) {
+            logger.info("Yes was pressed");
+            BookListController.bdc.fireSave();
+            saveMenuResult = addBookView();
+        } else if (saveMenuResult.get() == no) {
+            logger.info("No was pressed");
+            saveMenuResult = addBookView();
+        } else if (saveMenuResult.get() == cancel)
+            logger.info("Cancel was pressed");
+        else {
+            logger.info("No changes to the model were found");
+            saveMenuResult = addBookView();
+        }
     }
 
     private Optional<ButtonType> stopBookTableGateway() {
@@ -164,12 +263,13 @@ public class MenuController implements Initializable {
 
     public void switchView(ViewType viewType){
         String view = "";
-        MasterController controller = null;
+        //MasterController controller = null;
         switch(viewType){
             case BOOKLISTVIEW:
                 view = "BookListView.fxml";
                 List<Book> books = BookTableGateway.getInstance().bookList();
                 controller = BookListController.getBookListController(books);
+                //logger.info(controller);
                 logger.info("Switching to BookListView");
                 break;
             case BOOKDETAILVIEW:
@@ -207,7 +307,9 @@ public class MenuController implements Initializable {
         borderPane.setCenter(viewNode);
     }
 
-    public static Alert createAlert() {
+    public Alert createAlert() {
+
+        //return new Alert(AlertType.CONFIRMATION);
         Alert alert = new Alert(AlertType.NONE, "Sample", yes, no, cancel);
         alert.setTitle("Warning: Attempting to exit page without saving changes.");
         alert.setContentText("Would you like to save your work?");
