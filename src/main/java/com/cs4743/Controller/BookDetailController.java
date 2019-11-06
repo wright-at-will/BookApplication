@@ -65,7 +65,7 @@ public class BookDetailController implements Initializable, MasterController {
             auditTrailButton.setDisable(false);
             titleField.setText(book.getTitle());
             summaryArea.setText(book.getSummary());
-            yearField.setText(Integer.toString(book.getPubYear()));
+            yearField.setText(book.pubYear>0?Integer.toString(book.getPubYear()):"");
             isbnField.setText(book.getIsbn());
 
       //      for (int i = 0; i < trackPublisher.size(); i++) {
@@ -219,9 +219,12 @@ public class BookDetailController implements Initializable, MasterController {
 
     // search for differences between the text fields and what they previously were
     public Boolean checkForChanges() {
+        if(book.getBookID() == 0)
+            return checkForChangesNewBook();
+
         if(book.getTitle().equals(titleField.getText()) &&
                 book.getSummary().equals(summaryArea.getText()) &&
-                Integer.toString(book.getPubYear()) == (yearField.getText()) &&
+                book.getPubYear() == Integer.parseInt(yearField.getText()) &&
                 book.getIsbn().equals(isbnField.getText())) {
             return false;
         } else {
@@ -232,6 +235,7 @@ public class BookDetailController implements Initializable, MasterController {
 
     // search for differences between the text fields and what they should be by default
     public Boolean checkForChangesNewBook() {
+
         logger.info(titleField.getText());
         if(titleField.getText().equals("") && summaryArea.getText().equals("") &&
                 yearField.getText().equals("") && isbnField.getText().equals("")) {
@@ -241,15 +245,11 @@ public class BookDetailController implements Initializable, MasterController {
         }
     }
 
-    // check to see if the selection is a new book
-    public Boolean checkbook() {
-        if(this.book.getBookID() == 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
 
+    //Tests if the book has been changed, returns false if not
+    public Boolean checks(){
+        return checkForChanges();
+    }
     public Optional<ButtonType> switchAuditTrailView() {
         MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW);
         BookDetailController.verifyUserSaved = false;

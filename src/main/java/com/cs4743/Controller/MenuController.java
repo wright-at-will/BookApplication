@@ -146,6 +146,10 @@ public class MenuController implements Initializable {
         */
         logger.info(controller);
         logger.info(event.getSource());
+        if(controller instanceof BookDetailController){
+            if(!cleanup((BookDetailController) controller))
+                return;
+        }
         if(event.getSource()==closeAppMenuItem){
                 Platform.exit();
         } else if(event.getSource() == showBookListMenuItem){
@@ -171,22 +175,23 @@ public class MenuController implements Initializable {
 
     }
 
-    private void cleanup(){
+    private boolean cleanup(BookDetailController controller){
+        if(!controller.checkForChanges())
+            return  stopBookTableGateway();
         Optional<ButtonType> saveMenuResult = alert.showAndWait();
-        logger.info("Close App menu Item clicked");
+        //logger.info("Close App menu Item clicked");
         if (saveMenuResult.get() == yes) {
             logger.info("Yes was pressed");
             BookListController.bdc.fireSave();
-            saveMenuResult = stopBookTableGateway();
         } else if (saveMenuResult.get() == no) {
             logger.info("No was pressed");
-            saveMenuResult = stopBookTableGateway();
-        } else if (saveMenuResult.get() == cancel)
+        } else if (saveMenuResult.get() == cancel) {
             logger.info("Cancel was pressed");
-        else {
+            return false;
+        }else {
             logger.info("No changes on the model were found");
-            saveMenuResult = stopBookTableGateway();
         }
+        return stopBookTableGateway();
     }
 
     private void cleanup2() {
@@ -233,14 +238,14 @@ public class MenuController implements Initializable {
         }
     }
 
-    private Optional<ButtonType> stopBookTableGateway() {
+    private Boolean stopBookTableGateway() {
         try {
             btg.closeConnection();
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-        Platform.exit();
-        return null;
+        //Platform.exit();
+        return true;
     }
 
     private Optional<ButtonType> switchBookListView() {
