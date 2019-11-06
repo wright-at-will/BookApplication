@@ -223,20 +223,44 @@ public class BookDetailController implements Initializable, MasterController {
 
     // search for differences between the text fields and what they previously were
     public Boolean checkForChanges() {
+        logger.info("{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",book.getTitle(),book.getSummary(),book.getIsbn(),book.getPubYear(),
+                titleField.getText(),summaryArea.getText(), isbnField.getText(),yearField.getText());
+        logger.info("Book id is: "+book.getBookID());
         if(book.getBookID() == 0)
             return checkForChangesNewBook();
-
-        if(book.getTitle().equals(titleField.getText()) &&
-                book.getSummary().equals(summaryArea.getText()) &&
-                book.getPubYear() == Integer.parseInt(yearField.getText()) &&
-                book.getIsbn().equals(isbnField.getText())) {
-        	return false;
-        } else {
-            return true;
-        }
+        logger.info(""+checkTitle()+checkSummary()+checkPubYear()+checkIsbn());
+        return checkTitle() || checkSummary() || checkPubYear() || checkIsbn();
 
     }
+    private boolean checkTitle(){
+        return check(book.getTitle(),titleField.getText());
+    }
+    private boolean checkSummary(){
+        return check(book.getSummary(),summaryArea.getText());
+    }
 
+    private boolean check(String book, String gui){
+        if(book != null && gui != null)
+            return !book.equals(gui);
+        else if(book == null && gui == null)
+            return false;
+        return true;
+    }
+    private boolean checkPubYear() {
+        try {
+            return book.getPubYear() != Integer.parseInt(yearField.getText());
+
+        } catch (Exception e){
+            if(yearField.getText().length() > 0)
+                return true;
+            if(book.getPubYear() == 0)
+                return false;
+            return true;
+        }
+    }
+    private boolean checkIsbn(){
+        return check(book.getIsbn(),isbnField.getText());
+    }
     // search for differences between the text fields and what they should be by default
     public Boolean checkForChangesNewBook() {
 

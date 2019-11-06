@@ -182,7 +182,7 @@ public class MenuController implements Initializable {
         //logger.info("Close App menu Item clicked");
         if (saveMenuResult.get() == yes) {
             logger.info("Yes was pressed");
-            BookListController.bdc.fireSave();
+            controller.fireSave();
         } else if (saveMenuResult.get() == no) {
             logger.info("No was pressed");
         } else if (saveMenuResult.get() == cancel) {
