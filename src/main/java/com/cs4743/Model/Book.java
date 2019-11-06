@@ -51,57 +51,85 @@ public class Book {
     }
 
     //Save handles all the setters at once
-	public void save() {
-		if(!isValidTitle()) {
-			 Alert a = new Alert(AlertType.ERROR); 
-			 a.setContentText("Title must be between 1 and 255 chars");
-			 a.show();
-			throw new BookException("Title must be between 1 and 255 chars");
+	public void save(int id, String title, String summary, String pubYear, String isbn) {
+		String error = (saveTitle(title) + saveSummary(summary) + saveYear(pubYear) + saveIsbn(isbn));
+		if(error.length() > 0){
+			alertShowAndThrow(error);
 		}
-		if(!isValidSummary()){
-			Alert a = new Alert(AlertType.ERROR); 
-			a.setContentText("Summary must be less than 65536 chars");
-			a.show();
-			throw new BookException("Summary must be less than 65536 chars");
-		}
-		if(!isValidYearPublished()){
-			Alert a = new Alert(AlertType.ERROR); 
-			a.setContentText("YearPublished must be between 1455 and 2019");
-			a.show();
-			throw new BookException("YearPublished must be between 1455 and 2019");
-		}
-		if(!isValidIsbn()) {
-			Alert a = new Alert(AlertType.ERROR); 
-			a.setContentText("ISBN must be less than 13 chars");
-			a.show();
-			throw new BookException("ISBN must be less than 13 chars");
-		}
-
+		this.bookID = id;
 		BookTableGateway.getInstance().saveBook(this);
+	}
+
+	public void alertShowAndThrow(String context) throws BookException{
+    	Alert a = new Alert(AlertType.ERROR);
+    	a.setContentText(context);
+    	a.show();
+    	throw new BookException(context);
 	}
 	
 	public List<AuditTrailEntry> getAuditTrail(){
 		List<AuditTrailEntry> auditTrail = BookTableGateway.getInstance().getAuditTrail(this.getBookID());
 		return auditTrail;
 	}
-  
 
-	public boolean isValidTitle() {
+	private String saveTitle(String title){
+		if(title == null || title.equals(""))
+			return "Title field cannot be empty";
+		if(!isValidTitle(title))
+			return "Title must be between 1 and 255 chars\n";
+		this.title = title;
+		return "";
+	}
+
+	private String saveSummary(String summary){
+		if(summary == null || summary.equals(""))
+			return "";
+		if(!isValidSummary(summary))
+			return "Summary must be less than 65536 chars";
+		this.summary = summary;
+		return "";
+	}
+
+	private String saveYear(String year){
+		if(year == null || year.equals(""))
+			return "";
+		try{
+			int pubYear = Integer.parseInt(year);
+			if(isValidYearPublished(pubYear))
+				this.pubYear = pubYear;
+		} catch (Exception e){
+			return "Year published must be between 1455 and 2019\n";
+		}
+		return "";
+	}
+
+	private String saveIsbn(String isbn){
+		if(isbn == null || isbn.equals(""))
+			return "";
+		if(!isValidIsbn(isbn))
+			return "ISBN must be less than 13 chars\n";
+		this.isbn = isbn;
+		return "";
+	}
+
+
+
+	public boolean isValidTitle(String title) {
 		if(title.length() < 1 || title.length() > 255)
 			return false;
 		return true;
 	}
-	public boolean isValidSummary() {
+	public boolean isValidSummary(String summary) {
 		if(summary.length() > 65536)
 			return false;
 		return true;
 	}
-	public boolean isValidYearPublished() {
+	public boolean isValidYearPublished(int pubYear) {
 		if(pubYear < 1455 || pubYear >= 2020)
 			return false;
 		return true;
 	}
-	public boolean isValidIsbn() {
+	public boolean isValidIsbn(String isbn) {
 		if(isbn.length() > 13)
 			return false;
 		return true;

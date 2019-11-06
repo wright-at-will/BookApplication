@@ -1,5 +1,6 @@
 package com.cs4743.Services;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,7 +22,7 @@ public class PublisherTableGateway extends Application{
         Statement stmt = null;
         try {
             String query = "select * from publisher";
-            stmt = BookTableGateway.getInstance().getConnection().createStatement();
+            stmt = BookTableGateway.getInstance().getConnection(Connection.TRANSACTION_READ_COMMITTED).createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
             while(rs.next()){

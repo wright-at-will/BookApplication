@@ -32,7 +32,7 @@ public class MenuController implements Initializable {
 
     // define MenuController instance for the Singleton class
     private static MenuController instance = null;
-    public static BookTableGateway btg = new BookTableGateway();
+    public static BookTableGateway btg = BookTableGateway.getInstance();
     private MasterController controller = null;
 
     // log4j logger definition
@@ -268,18 +268,18 @@ public class MenuController implements Initializable {
             case BOOKLISTVIEW:
                 view = "BookListView.fxml";
                 List<Book> books = BookTableGateway.getInstance().bookList();
-                controller = BookListController.getBookListController(books);
+                controller = BookListController.getBookListController(books, btg);
                 //logger.info(controller);
                 logger.info("Switching to BookListView");
                 break;
             case BOOKDETAILVIEW:
                 view = "BookDetailView.fxml";
-                controller = new BookDetailController(BookTableGateway.read(book.getBookID()));
+                controller = new BookDetailController(btg.read(book.getBookID()), btg);
                 logger.info("Switching to BookDetailView");
                 break;
             case NEWBOOKVIEW:
                 view = "BookDetailView.fxml";
-                controller = new BookDetailController(new Book());
+                controller = new BookDetailController(new Book(), btg);
                 break;
             case SAVEDETAILCHANGES:
                 view = "SaveDetailChanges.fxml";

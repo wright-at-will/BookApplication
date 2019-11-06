@@ -21,26 +21,26 @@ import java.util.List;
 
 public class BookTableGateway {
 
-    private static Logger logger = LogManager.getLogger(MenuController.class);
-    private static MysqlDataSource ds = null;
-    private static Connection conn = null;
-    private static PreparedStatement stmt = null;
-    private static ResultSet rs = null;
+    private Logger logger = LogManager.getLogger(MenuController.class);
+    private MysqlDataSource ds = null;
+    private Connection conn = null;
+    private PreparedStatement stmt = null;
+    private ResultSet rs = null;
     
     private static BookTableGateway instance = null;
 
-    private static int INSERT = 0;
-    private static int UPDATE = 1;
-    private static int BOOK = 2;
-    private static int BOOKLIST = 3;
-    private static int DELETE = 4;
+    private int INSERT = 0;
+    private int UPDATE = 1;
+    private int BOOK = 2;
+    private int BOOKLIST = 3;
+    private int DELETE = 4;
 
-    static String url = "jdbc:mysql://easel2.fulgentcorp.com/yby805" +
+    static final String url = "jdbc:mysql://easel2.fulgentcorp.com/yby805" +
             "?" +
             "db=yby805" +
             "&useLegacyDatetimeCode=false&useTimezone=true&serverTimezone=GMT ";
-    static String user = "yby805";
-    static String password = "y9X8yYS2ZsFsuK1Xlzgj";
+    static final String user = "yby805";
+    static final String password = "y9X8yYS2ZsFsuK1Xlzgj";
 
     //TODO Change queires so that they can take the right keys and values
     private static String[] queries =
@@ -51,13 +51,25 @@ public class BookTableGateway {
                     "UPDATE `Book` SET" +
                             "`title`=?,`summary`=?,`year_published`=?,`isbn`=?" +
                             "WHERE `id` = ?",
-                    "SELECT * FROM Book WHERE id = {BookID} FOR UPDATE",
+                    "SELECT * FROM Book WHERE id = ? FOR UPDATE",
                     "SELECT id, title FROM Book",
                     "DELETE FROM `Book` WHERE `id` = ?"
             };
 
-    //TODO Create should create the query inside it according to the parts of the book that have been filled out
-    public static int update(Book book){
+    public static BookTableGateway getInstance() {
+        if(instance == null) {
+            instance = new BookTableGateway();
+        }
+
+        return instance;
+    }
+
+    private BookTableGateway(){
+        bookTableGatewayFactory();
+    }
+
+    //Update should expect that a connection already exists
+    public int update(Book book){
         int bookID = book.getBookID();
         if(bookID < 1){
             return create(book);
@@ -81,20 +93,17 @@ public class BookTableGateway {
             //}
             query.append("WHERE `id` = ? ");
             params.add(bookID);
-            getResultSet(params, query.toString());
-
+            getResultSet(params, query.toString(), Connection.TRANSACTION_REPEATABLE_READ);
+            conn.commit();
+            closeConnection();
         } catch (Exception e){
             e.printStackTrace();
             bookID = 0;
-        } finally {
-           closeConnection();
         }
         return bookID;
     }
 
-    public static int create(Book book){
-        int id = 0;
-        ResultSet rs = null;
+    public int create(Book book){
         try{
             //should be called when the id is 0
             //Title cannot be null
@@ -114,43 +123,44 @@ public class BookTableGateway {
             }
             String query = "INSERT INTO `Book`("+String.join(", ",filledFields)+") VALUES(" + String.join(", ", Collections.nCopies(params.size(),"?"))+")";
                     //"SELECT LAST_INSERT_ID()";
-            getResultSet(params,query);
+            getConnection(Connection.TRANSACTION_REPEATABLE_READ);
+            getResultSet(params,query, Connection.TRANSACTION_REPEATABLE_READ);
             rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
             rs.next();
-            id = rs.getInt(1);
+            int id = rs.getInt(1);
             closeConnection();
+            return id;
         } catch (Exception e){
             e.printStackTrace();
         } finally {
             closeConnection();
         }
-        return id;
+        return -1;
     }
 
-    public static Book read(int bookID){
+    public Book read(int bookID){
         ArrayList<Object> params = new ArrayList<>();
         Book book = null;
         try {
         	//pessimistic locking
-        	conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
         	//turn off auto commit
-        	conn.setAutoCommit(false);
             if(bookID < 1) {
                 logger.info("Creating new book object");
                 return new Book();
                 //throw new SQLException("Bad book id given to read");
             }
+            getConnection(Connection.TRANSACTION_REPEATABLE_READ);
             params.add(bookID);
-            getResultSet(params,queries[BOOK]);
+            conn.setAutoCommit(false);
+            getResultSet(params,queries[BOOK], Connection.TRANSACTION_REPEATABLE_READ);
             book = new Book(rs);
-            //commit
-            //conn.commit();
-            //turn on auto commit
-            conn.setAutoCommit(true);
+            rs.close();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally{
             closeConnection();
+        } finally{
+            //closeConnection();
         }
         return book;
     }
@@ -161,7 +171,8 @@ public class BookTableGateway {
         ArrayList<Object> params = new ArrayList<>();
         params.add(book.getBookID());
         try{
-            getResultSet(params, queries[DELETE]);
+            getConnection(Connection.TRANSACTION_REPEATABLE_READ);
+            getResultSet(params, queries[DELETE], Connection.TRANSACTION_REPEATABLE_READ);
         } catch (SQLException e){
             e.printStackTrace();
         } finally {
@@ -169,11 +180,12 @@ public class BookTableGateway {
         }
     }
 
-    public static ArrayList bookList(){
+    public ArrayList bookList(){
 
         ArrayList<Book> books = new ArrayList<>();
         try {
-            getResultSet(new ArrayList<>(), queries[BOOKLIST]);
+            getConnection(Connection.TRANSACTION_READ_COMMITTED);
+            getResultSet(new ArrayList<>(), queries[BOOKLIST], Connection.TRANSACTION_READ_COMMITTED);
             while(rs.next()) {
                 if (rs.getInt("id") < 1 || rs.getString("title") == null){
                     logger.error("Bad object returned by query:\n");
@@ -189,9 +201,8 @@ public class BookTableGateway {
         return books;
     }
 
-    private static void getResultSet(ArrayList<Object> params, String query) throws SQLException {
+    private void getResultSet(ArrayList<Object> params, String query, int isolation) throws SQLException {
         bookTableGatewayFactory();
-        conn = ds.getConnection();
         stmt = conn.prepareStatement(query);
         for(int i=0; i<params.size();i++){
                 stmt.setObject(i+1,params.get(i));
@@ -200,7 +211,7 @@ public class BookTableGateway {
         rs = stmt.getResultSet();
     }
 
-    public static void bookTableGatewayFactory() {
+    private void bookTableGatewayFactory() {
         if(ds == null) {
             ds = new MysqlDataSource();
             ds.setURL(url);
@@ -209,7 +220,7 @@ public class BookTableGateway {
         }
     }
 
-    public static void closeConnection(){
+    public void closeConnection(){
         try {
             if (conn != null) {
                 conn.close();
@@ -223,15 +234,16 @@ public class BookTableGateway {
         }
     }
     
-    public static void insertAuditTrailEntry (int bookID, String entryMessage) throws SQLException {
+    public void insertAuditTrailEntry (int bookID, String entryMessage) throws SQLException {
         String query = "INSERT INTO book_audit_trail (book_id, entry_msg)  VALUES (?, ?)";
-        PreparedStatement ps = BookTableGateway.getInstance().getConnection().prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+        PreparedStatement ps = getConnection(Connection.TRANSACTION_READ_COMMITTED).prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setInt(1, bookID);
         ps.setString(2, entryMessage);
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
         rs.next();
+        closeConnection();
     }
 
     public List<AuditTrailEntry> getAuditTrail(int bookId) {
@@ -239,7 +251,7 @@ public class BookTableGateway {
         Statement stmt = null;
         try{
             String query = "SELECT * FROM book_audit_trail ORDER BY date_added ASC ";
-            stmt = this.getConnection().createStatement();
+            stmt = getConnection(Connection.TRANSACTION_READ_COMMITTED).createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
             while(rs.next()){
@@ -251,6 +263,7 @@ public class BookTableGateway {
                     auditTrail.add(atr);
                 }
             }
+            closeConnection();
         } catch(SQLException err){
             System.out.println(err.getMessage());
         }
@@ -258,50 +271,40 @@ public class BookTableGateway {
         return auditTrail;
     }
     
-	public static BookTableGateway getInstance() {
-		if(instance == null) {
-			instance = new BookTableGateway();
-		}
-		
-		return instance;
-	}
+
 	
 	public void saveBook(Book book) {
-		Statement stmt = null;
 
-		try{
-			String query = "select * from book";
-			stmt = this.getConnection().createStatement();
-			ResultSet rs = stmt.executeQuery(query);
 			try {
 				if(book.getBookID() == 0) {
 					int newId = create(book);
 					book.setBookID(newId);
-				} else {	
-					while(rs.next()) {
-						if (book.getBookID() == rs.getInt("id") && book.getLastModified().equals(rs.getTimestamp("last_modified").toLocalDateTime())){
-							logger.info("Timestamps match. Update successful.");
-							update(book);
-						}
-						else if (book.getBookID() == rs.getInt("id") && !book.getLastModified().equals(rs.getTimestamp("last_modified").toLocalDateTime())){			
-							logger.info("Timestamps do not match.");
-							Alert a = new Alert(AlertType.ERROR); 
-							a.setContentText("Changes could not be saved. Please fetch most recent version from book list");
-							a.show();
-							throw new BookException("Changes could not be saved. Please fetch most recent version from book list");
-						}
-					}					
-				}
-			} catch (SQLException e) {
+				} else {
+                    update(book);
+                    //while(rs.next()) {
+                    //	if (book.getBookID() == rs.getInt("id") && book.getLastModified().equals(rs.getTimestamp("last_modified").toLocalDateTime())){
+                    //		logger.info("Timestamps match. Update successful.");
+                    //		update(book);
+                    //	}
+                    //	else if (book.getBookID() == rs.getInt("id") && !book.getLastModified().equals(rs.getTimestamp("last_modified").toLocalDateTime())){
+                    //		logger.info("Timestamps do not match.");
+                    //		Alert a = new Alert(AlertType.ERROR);
+                    //		a.setContentText("Changes could not be saved. Please fetch most recent version from book list");
+                    //		a.show();
+                    //		throw new BookException("Changes could not be saved. Please fetch most recent version from book list");
+                    //	}
+                    //}
+                }
+			} catch (Exception e) {
 				e.printStackTrace();
-			}	
-		} catch (SQLException err) {
-			err.printStackTrace();
-		}
-			
+			}
+
 	}
 	
-	public Connection getConnection() {
+	public Connection getConnection(int isolationLevel) throws SQLException {
+        if(conn == null || conn.isClosed())
+            conn = ds.getConnection();
+        conn.setTransactionIsolation(isolationLevel);
 		return conn;
 	}
 

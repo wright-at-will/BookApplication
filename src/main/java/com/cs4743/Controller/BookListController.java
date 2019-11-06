@@ -33,7 +33,7 @@ public class BookListController implements Initializable, MasterController {
     public static Book emptyBook, selected;
     public static ObservableList<Book> bookListHistory = FXCollections.observableArrayList();
     public static BookDetailController bdc;
-    BookTableGateway btg = new BookTableGateway();
+    private BookTableGateway btg;
 
     @FXML
     private Hyperlink book1Hyperlink, book2Hyperlink, book3Hyperlink, book4Hyperlink, book5Hyperlink;
@@ -44,12 +44,13 @@ public class BookListController implements Initializable, MasterController {
     @FXML
     private Button deleteButton;
 
-    private BookListController(List<Book> books) {
+    private BookListController(List<Book> books, BookTableGateway btg) {
         bookListHistory.clear();
         emptyBook = books.get(0);
         for (int i = 1; i < books.size(); i++) {
             bookListHistory.add(books.get(i));
         }
+        this.btg = btg;
     }
 
     @FXML
@@ -60,10 +61,10 @@ public class BookListController implements Initializable, MasterController {
         //bookList.getItems().remove(selectedBook);
     }
 
-    public static BookDetailController makeDetail() {
+    public BookDetailController makeDetail() {
         if (BookListController.getSelection() == null)
             System.out.println("Selection is null while trying to create detail");
-        bdc = new BookDetailController(BookListController.getSelection());
+        bdc = new BookDetailController(BookListController.getSelection(), btg);
         return bdc;
     }
 
@@ -122,7 +123,7 @@ public class BookListController implements Initializable, MasterController {
 
     private static MasterController controller = null;
 
-    public static MasterController getBookListController(List<Book> books) { return controller = new BookListController(books); }
+    public static MasterController getBookListController(List<Book> books, BookTableGateway btg) { return controller = new BookListController(books, btg); }
 
     public static MasterController getBookListController() { return controller; }
 

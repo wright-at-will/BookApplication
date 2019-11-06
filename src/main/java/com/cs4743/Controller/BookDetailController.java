@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 public class BookDetailController implements Initializable, MasterController {
 
     private static Logger logger = LogManager.getLogger(BookDetailController.class);
+    private BookTableGateway btg;
 
     @FXML
     private TextField titleField, yearField, isbnField;
@@ -51,8 +52,9 @@ public class BookDetailController implements Initializable, MasterController {
 
     BookDetailController() {}
 
-    public BookDetailController(Book book){
+    public BookDetailController(Book book, BookTableGateway btg){
         this.book = book;
+        this.btg = btg;
     }
 
     // format output for the detail view
@@ -98,12 +100,13 @@ public class BookDetailController implements Initializable, MasterController {
                     break;
                 }
             }*/
-            newBook.save();
+            newBook.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
         }
         // book exists
         else {
+            /*
             if(!book.getTitle().equals(titleField.getText())) {
                 addAuditInfoUpdateBook(book.getBookID() ,"Title", book.getTitle(), titleField.getText());
             }
@@ -116,19 +119,19 @@ public class BookDetailController implements Initializable, MasterController {
             if(!book.getIsbn().equals(isbnField.getText())) {
                 addAuditInfoUpdateBook(book.getBookID() ,"Isbn", book.getIsbn(), isbnField.getText());
             }
-
-            book.setBookID(book.getBookID());
-            book.setTitle(titleField.getText());
-            book.setSummary(summaryArea.getText());
-            book.setYearPublished(Integer.parseInt(yearField.getText()));
-            book.setIsbn(isbnField.getText());
+            */
+            //book.setBookID(book.getBookID());
+            //book.setTitle(titleField.getText());
+            //book.setSummary(summaryArea.getText());
+            //book.setYearPublished(Integer.parseInt(yearField.getText()));
+            //book.setIsbn(isbnField.getText());
             //for (int i = 0; i < trackPublisher.size(); i++){
             //    if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
             //        book.setPublisherId(trackPublisher.get(i).getId());
             //        break;
             //    }
             //}
-            book.save();
+            book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
             logger.info("Save button was clicked");
         }
 
@@ -189,21 +192,21 @@ public class BookDetailController implements Initializable, MasterController {
     public void addAuditInfoNewBook(int bookID) throws SQLException{
         logger.info(bookID);
 
-        BookTableGateway.insertAuditTrailEntry(bookID, "Book added");
+        btg.insertAuditTrailEntry(bookID, "Book added");
     }
 
     // adds audit info for an updated book string
     public void addAuditInfoUpdateBook(int bookID, String field, String previousValue, String newValue) throws SQLException{
         String message = field + " changed from \"" + previousValue + "\" to \"" + newValue + "\"";
 
-        BookTableGateway.insertAuditTrailEntry(bookID, message);
+        btg.insertAuditTrailEntry(bookID, message);
     }
 
     // adds audit info for an updated book int
     public void addAuditInfoUpdateBookInteger(int bookID, String field, int previousValue, int newValue) throws SQLException{
         String message = field + " changed from \"" + previousValue + "\" to \"" + newValue + "\"";
 
-        BookTableGateway.insertAuditTrailEntry(bookID, message);
+        btg.insertAuditTrailEntry(bookID, message);
     }
 
     // search for differences between the text fields and what they previously were
