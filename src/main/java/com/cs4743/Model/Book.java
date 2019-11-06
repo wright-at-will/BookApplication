@@ -51,19 +51,24 @@ public class Book {
     }
 
     //Save handles all the setters at once
-	public void save(int id, String title, String summary, String pubYear, String isbn) {
+	public void save(int id, String title, String summary, String pubYear, String isbn) throws BookException{
 		String error = (saveTitle(title) + saveSummary(summary) + saveYear(pubYear) + saveIsbn(isbn));
 		if(error.length() > 0){
 			alertShowAndThrow(error);
 		}
 		this.bookID = id;
-		BookTableGateway.getInstance().saveBook(this);
+		try {
+			BookTableGateway.getInstance().saveBook(this);
+		} catch (BookException e){
+			alertShowAndThrow(e.getMessage());
+		}
 	}
 
 	public void alertShowAndThrow(String context) throws BookException{
     	Alert a = new Alert(AlertType.ERROR);
     	a.setContentText(context);
-    	a.show();
+    	//a.show();
+    	a.showAndWait();
     	throw new BookException(context);
 	}
 	
@@ -91,14 +96,16 @@ public class Book {
 	}
 
 	private String saveYear(String year){
-		if(year == null || year.equals(""))
+		if(year == null || year.equals("") || year.equals("0"))
 			return "";
 		try{
 			int pubYear = Integer.parseInt(year);
 			if(isValidYearPublished(pubYear))
 				this.pubYear = pubYear;
+			else
+				return "Year published must be between 1455 and 2019\n";
 		} catch (Exception e){
-			return "Year published must be between 1455 and 2019\n";
+			return "Year published must be numerical\n";
 		}
 		return "";
 	}

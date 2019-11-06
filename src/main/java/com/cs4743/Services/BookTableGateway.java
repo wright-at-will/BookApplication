@@ -69,7 +69,7 @@ public class BookTableGateway {
     }
 
     //Update should expect that a connection already exists
-    public int update(Book book){
+    public int update(Book book) throws BookException{
         int bookID = book.getBookID();
         if(bookID < 1){
             return create(book);
@@ -150,6 +150,7 @@ public class BookTableGateway {
                 //throw new SQLException("Bad book id given to read");
             }
             getConnection(Connection.TRANSACTION_REPEATABLE_READ);
+
             params.add(bookID);
             conn.setAutoCommit(false);
             getResultSet(params,queries[BOOK], Connection.TRANSACTION_REPEATABLE_READ);
@@ -207,7 +208,11 @@ public class BookTableGateway {
         for(int i=0; i<params.size();i++){
                 stmt.setObject(i+1,params.get(i));
         }
-        stmt.execute();
+        stmt.setQueryTimeout(5);
+        try{stmt.execute();}
+        catch (SQLException e){
+            throw new BookException("Request timed out");
+        }
         rs = stmt.getResultSet();
     }
 

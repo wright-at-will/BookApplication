@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import com.cs4743.Model.AuditTrailEntry;
 import com.cs4743.Model.Book;
+import com.cs4743.Services.BookException;
 import com.cs4743.Services.BookTableGateway;
 import com.cs4743.View.ViewType;
 import javafx.application.Application;
@@ -274,8 +275,13 @@ public class MenuController implements Initializable {
                 break;
             case BOOKDETAILVIEW:
                 view = "BookDetailView.fxml";
-                controller = new BookDetailController(btg.read(book.getBookID()), btg);
-                logger.info("Switching to BookDetailView");
+                try {
+                    Book readBook = btg.read(book.getBookID());
+
+                    controller = new BookDetailController(readBook, btg);
+                    logger.info("Switching to BookDetailView");
+                } catch (BookException e){ book.alertShowAndThrow(e.getMessage() +
+                        "\n Another user may be editing this book"); }
                 break;
             case NEWBOOKVIEW:
                 view = "BookDetailView.fxml";

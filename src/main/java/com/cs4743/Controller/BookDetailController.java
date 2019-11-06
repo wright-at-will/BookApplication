@@ -2,6 +2,7 @@ package com.cs4743.Controller;
 
 import com.cs4743.Model.Book;
 import com.cs4743.Model.Publisher;
+import com.cs4743.Services.BookException;
 import com.cs4743.Services.BookTableGateway;
 import com.cs4743.View.ViewType;
 
@@ -131,7 +132,14 @@ public class BookDetailController implements Initializable, MasterController {
             //        break;
             //    }
             //}
-            book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
+            try {
+                book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
+            } catch (BookException e){
+                return;
+            }
+
+
+
             logger.info("Save button was clicked");
         }
 
