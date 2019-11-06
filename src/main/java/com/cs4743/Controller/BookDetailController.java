@@ -107,28 +107,29 @@ public class BookDetailController implements Initializable, MasterController {
             newBook.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
-        }
-        // book exists
-        else {
-            /*
+        } else {
+        	/*
+            logger.info("Save button was clicked and book exists");
             if(!book.getTitle().equals(titleField.getText())) {
-                addAuditInfoUpdateBook(book.getBookID() ,"Title", book.getTitle(), titleField.getText());
+                addAuditInfoUpdateBook(book.getBookID() ,"title", book.getTitle(), titleField.getText());
             }
             if(!book.getSummary().equals(summaryArea.getText())) {
-                addAuditInfoUpdateBook(book.getBookID() ,"Summary", book.getSummary(), summaryArea.getText());
+                addAuditInfoUpdateBook(book.getBookID() ,"summary", book.getSummary(), summaryArea.getText());
             }
             if(book.getPubYear() != (Integer.parseInt(yearField.getText()))) {
-                addAuditInfoUpdateBookInteger(book.getBookID() ,"Year Published", book.getPubYear(), Integer.parseInt(yearField.getText()));
+                addAuditInfoUpdateBookInteger(book.getBookID() ,"year_published", book.getPubYear(), Integer.parseInt(yearField.getText()));
             }
             if(!book.getIsbn().equals(isbnField.getText())) {
-                addAuditInfoUpdateBook(book.getBookID() ,"Isbn", book.getIsbn(), isbnField.getText());
+                addAuditInfoUpdateBook(book.getBookID() ,"isbn", book.getIsbn(), isbnField.getText());
             }
+            
+            book.setBookID(book.getBookID());
+            book.setTitle(titleField.getText());
+            book.setSummary(summaryArea.getText());
+            book.setYearPublished(Integer.parseInt(yearField.getText()));
+            book.setIsbn(isbnField.getText());
             */
-            //book.setBookID(book.getBookID());
-            //book.setTitle(titleField.getText());
-            //book.setSummary(summaryArea.getText());
-            //book.setYearPublished(Integer.parseInt(yearField.getText()));
-            //book.setIsbn(isbnField.getText());
+            
             for (int i = 0; i < trackPublisher.size(); i++){
                 if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
                     book.setPublisherId(trackPublisher.get(i).getId());
