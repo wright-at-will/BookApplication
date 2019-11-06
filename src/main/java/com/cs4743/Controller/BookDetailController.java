@@ -44,7 +44,7 @@ public class BookDetailController implements Initializable, MasterController {
     private Button auditTrailButton;
 
     @FXML
-    private ComboBox<String> publisherComboBox;
+    private ComboBox<Publisher> publisherComboBox;
 
     private Book book;
 
@@ -70,72 +70,61 @@ public class BookDetailController implements Initializable, MasterController {
             yearField.setText(book.pubYear>0?Integer.toString(book.getPubYear()):"");
             isbnField.setText(book.getIsbn());
 
-            for (int i = 0; i < trackPublisher.size(); i++) {
-                if (trackPublisher.get(i).getId() == book.getPublisherId()) {
-                    publisherComboBox.setValue(trackPublisher.get(i).getPublisherName());
-                    break;
-                    }
-                }
+            //for (int i = 0; i < trackPublisher.size(); i++) {
+            //    if (trackPublisher.get(i).getId() == book.getPublisherId()) {
+            //        publisherComboBox.setValue(trackPublisher.get(i).getPublisherName());
+            //        break;
+            //        }
+            //    }
+            publisherComboBox.setItems(trackPublisher);
         }
         titleField.setPromptText("Title");
         summaryArea.setPromptText("Summary");
         yearField.setPromptText("Year Published");
         isbnField.setPromptText("ISBN");
-                
-        publisherComboBox.setValue(publisherNameList.get(0));
+
+        publisherComboBox.setValue(trackPublisher.get(0));
+        //
+        // publisherComboBox.setValue(publisherNameList.get(0));
     }
 
     @FXML
     public void clickedSaveButton(ActionEvent event) throws SQLException {
         if (book.getBookID() == 0) {
             Book newBook = new Book();
-            newBook.setTitle(summaryArea.getText());
-            newBook.setSummary(summaryArea.getText());
+            newBook.saveTitle(summaryArea.getText());
+            newBook.saveSummary(summaryArea.getText());
             try{
-                newBook.setYearPublished(Integer.parseInt(yearField.getText()));
+                newBook.saveYear(yearField.getText());
             } catch (NumberFormatException err){
                 logger.info("Empty String could not be converted to int. Replaced year published with default 1455");
-                newBook.setYearPublished(1455);
+                newBook.saveYear("1455");
             }
-            newBook.setIsbn(isbnField.getText());
-            for (int i = 0; i < trackPublisher.size(); i++){
-                if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
-                    newBook.setPublisherId(trackPublisher.get(i).getId());
-                    break;
-                }
-            }
-            newBook.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
+            newBook.saveIsbn(isbnField.getText());
+            newBook.setPublisherId(publisherComboBox.getValue().getId());
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
         } else {
-        	/*
+
             logger.info("Save button was clicked and book exists");
-            if(!book.getTitle().equals(titleField.getText())) {
+
+            if(checkTitle()) {
                 addAuditInfoUpdateBook(book.getBookID() ,"title", book.getTitle(), titleField.getText());
+                book.saveTitle(titleField.getText());
             }
-            if(!book.getSummary().equals(summaryArea.getText())) {
+            if(checkSummary()) {
                 addAuditInfoUpdateBook(book.getBookID() ,"summary", book.getSummary(), summaryArea.getText());
+                book.saveSummary(summaryArea.getText());
             }
-            if(book.getPubYear() != (Integer.parseInt(yearField.getText()))) {
+            if(checkPubYear()) {
                 addAuditInfoUpdateBookInteger(book.getBookID() ,"year_published", book.getPubYear(), Integer.parseInt(yearField.getText()));
+                book.saveYear(yearField.getText());
             }
-            if(!book.getIsbn().equals(isbnField.getText())) {
+            if(checkIsbn()) {
                 addAuditInfoUpdateBook(book.getBookID() ,"isbn", book.getIsbn(), isbnField.getText());
+                book.saveIsbn(isbnField.getText());
             }
-            
-            book.setBookID(book.getBookID());
-            book.setTitle(titleField.getText());
-            book.setSummary(summaryArea.getText());
-            book.setYearPublished(Integer.parseInt(yearField.getText()));
-            book.setIsbn(isbnField.getText());
-            */
-            
-            for (int i = 0; i < trackPublisher.size(); i++){
-                if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
-                    book.setPublisherId(trackPublisher.get(i).getId());
-                    break;
-                }
-            }
+            book.setPublisherId(1);
             try {
                 book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
             } catch (BookException e){
@@ -223,9 +212,6 @@ public class BookDetailController implements Initializable, MasterController {
 
     // search for differences between the text fields and what they previously were
     public Boolean checkForChanges() {
-        logger.info("{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",book.getTitle(),book.getSummary(),book.getIsbn(),book.getPubYear(),
-                titleField.getText(),summaryArea.getText(), isbnField.getText(),yearField.getText());
-        logger.info("Book id is: "+book.getBookID());
         if(book.getBookID() == 0)
             return checkForChangesNewBook();
         logger.info(""+checkTitle()+checkSummary()+checkPubYear()+checkIsbn());
@@ -289,7 +275,7 @@ public class BookDetailController implements Initializable, MasterController {
     	List<Publisher> publishers = PublisherTableGateway.getInstance().fetchPublishers();
     	updatePubisherLists(publishers);
     	publisherComboBox.setEditable(true);
-    	publisherComboBox.setItems(publisherNameList);
+    	publisherComboBox.setItems(trackPublisher);
         createViewDetails();
     }
 

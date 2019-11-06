@@ -52,6 +52,7 @@ public class Book {
 
     //Save handles all the setters at once
 	public void save(int id, String title, String summary, String pubYear, String isbn) throws BookException{
+
 		String error = (saveTitle(title) + saveSummary(summary) + saveYear(pubYear) + saveIsbn(isbn));
 		if(error.length() > 0){
 			alertShowAndThrow(error);
@@ -77,7 +78,7 @@ public class Book {
 		return auditTrail;
 	}
 
-	private String saveTitle(String title){
+	public String saveTitle(String title){
 		if(title == null || title.equals(""))
 			return "Title field cannot be empty";
 		if(!isValidTitle(title))
@@ -86,7 +87,7 @@ public class Book {
 		return "";
 	}
 
-	private String saveSummary(String summary){
+	public String saveSummary(String summary){
 		if(summary == null || summary.equals(""))
 			return "";
 		if(!isValidSummary(summary))
@@ -95,7 +96,7 @@ public class Book {
 		return "";
 	}
 
-	private String saveYear(String year){
+	public String saveYear(String year){
 		if(year == null || year.equals("") || year.equals("0"))
 			return "";
 		try{
@@ -110,7 +111,7 @@ public class Book {
 		return "";
 	}
 
-	private String saveIsbn(String isbn){
+	public String saveIsbn(String isbn){
 		if(isbn == null || isbn.equals(""))
 			return "";
 		if(!isValidIsbn(isbn))
@@ -142,18 +143,15 @@ public class Book {
 		return true;
 	}
 
-    public void setYearPublished(int pubYear) { this.pubYear = pubYear; }
     public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }   
 	public int getPublisherId() { return publisherId; }
-	public void setPublisherId(int publisherId) { this.publisherId = publisherId; }	
-	public void setTitle(String title) { this.title = title; }
-	public void setSummary(String summary) { this.summary = summary; }
-    public int getBookID(){ return bookID; }
+    public void setPublisherId(int id){ this.publisherId = id; }
+	public int getBookID(){ return bookID; }
 	public void setBookID(int bookID) { this.bookID = bookID; }
     public String getTitle() { return title; }
     public String getSummary() { return summary; }
     public int getPubYear() { return pubYear; }
+
 	public LocalDateTime getLastModified() { return lastModified; }
 	public void setLastModified(LocalDateTime lastModified) { this.lastModified = lastModified; }
     

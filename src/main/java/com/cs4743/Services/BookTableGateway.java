@@ -238,17 +238,21 @@ public class BookTableGateway {
 
         }
     }
-    
+
+    /*
+    This method is only called while editing a book entry, thus we have to make sure to preserve the
+    `FOR UPDATE` clause in the transaction. This means that we cannot close the connection or commit
+    here.
+     */
     public void insertAuditTrailEntry (int bookID, String entryMessage) throws SQLException {
         String query = "INSERT INTO book_audit_trail (book_id, entry_msg)  VALUES (?, ?)";
-        PreparedStatement ps = getConnection(Connection.TRANSACTION_READ_COMMITTED).prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+        PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setInt(1, bookID);
         ps.setString(2, entryMessage);
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
         rs.next();
-        closeConnection();
     }
 
     public List<AuditTrailEntry> getAuditTrail(int bookId) {

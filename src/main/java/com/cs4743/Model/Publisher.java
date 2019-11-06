@@ -19,6 +19,10 @@ public class Publisher {
         date_added = this.date_added;
     }
 
+    @Override
+    public String toString(){
+        return publisherName;
+    }
 
     public String getPublisherName() {
 		return publisherName;
