@@ -82,7 +82,7 @@ public class BookDetailController implements Initializable, MasterController {
         yearField.setPromptText("Year Published");
         isbnField.setPromptText("ISBN");
                 
-        publisherComboBox.setValue(publisherNameList.get(1));
+        publisherComboBox.setValue(publisherNameList.get(0));
     }
 
     @FXML
