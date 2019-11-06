@@ -57,8 +57,6 @@ public class BookListController implements Initializable, MasterController {
     private void deleteRecord(){
         Book selectedBook = bookList.getSelectionModel().getSelectedItem();
         logger.info("Selected book: {} bookID: {}", selectedBook.getTitle(), selectedBook.getBookID());
-        //btg.delete(selectedBook);
-        //bookList.getItems().remove(selectedBook);
     }
 
     public BookDetailController makeDetail() {
@@ -70,7 +68,6 @@ public class BookListController implements Initializable, MasterController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // initialize the books in the listView
         bookList.setEditable(true);
         bookList.setItems(bookListHistory);
         bookList.setCellFactory(param -> new ListCell<Book>() {
@@ -115,8 +112,6 @@ public class BookListController implements Initializable, MasterController {
         });
     }
 
-    //public String toString() { return selected.getTitle(); }
-
     public static void setSelected(Book book) { selected = book; }
 
     public static Book getSelection() { return selected; }
@@ -132,7 +127,7 @@ public class BookListController implements Initializable, MasterController {
     public static ObservableList<Book> getBookList() { return bookListHistory; }
 
     public static int getBookIndex(){ return bookIndex; }
-    // depending on the viewList index, set the bookListIndex ***CURRENTLY HARD CODED***
+
     public void setBookIndex(int vlIndex){ if(vlIndex < 0) return; bookIndex = vlIndex; }
 
 }

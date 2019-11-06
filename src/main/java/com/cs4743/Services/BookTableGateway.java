@@ -81,16 +81,12 @@ public class BookTableGateway {
             //Title cannot be null
                 params.add(book.getTitle());
                 query.append("`title` = ? ");
-            //if(book.getSummary()!=null) {
                 params.add(book.getSummary());
                 query.append(", `summary` = ? ");
-            //}if(book.getPubYear()>0) {
                 params.add(book.getPubYear());
                 query.append(", `year_published` = ? ");
-            //}if(book.getIsbn()!=null) {
                 params.add(book.getIsbn());
                 query.append(", `isbn` = ? ");
-            //}
             query.append("WHERE `id` = ? ");
             params.add(bookID);
             getResultSet(params, query.toString(), Connection.TRANSACTION_REPEATABLE_READ);
@@ -121,8 +117,8 @@ public class BookTableGateway {
                 params.add(book.getIsbn());
                 filledFields.add("`isbn`");
             }
-            String query = "INSERT INTO `Book`("+String.join(", ",filledFields)+") VALUES(" + String.join(", ", Collections.nCopies(params.size(),"?"))+")";
-                    //"SELECT LAST_INSERT_ID()";
+            String query = "INSERT INTO `Book`("+String.join(", ",filledFields)+") "
+            		+ "VALUES(" + String.join(", ", Collections.nCopies(params.size(),"?"))+")";
             getConnection(Connection.TRANSACTION_REPEATABLE_READ);
             getResultSet(params,query, Connection.TRANSACTION_REPEATABLE_READ);
             rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
@@ -142,12 +138,9 @@ public class BookTableGateway {
         ArrayList<Object> params = new ArrayList<>();
         Book book = null;
         try {
-        	//pessimistic locking
-        	//turn off auto commit
             if(bookID < 1) {
                 logger.info("Creating new book object");
                 return new Book();
-                //throw new SQLException("Bad book id given to read");
             }
             getConnection(Connection.TRANSACTION_REPEATABLE_READ);
 
@@ -168,7 +161,7 @@ public class BookTableGateway {
 
 
 
-    public void delete(Book book){
+    public void delete(Book book) {
         ArrayList<Object> params = new ArrayList<>();
         params.add(book.getBookID());
         try{
@@ -181,7 +174,7 @@ public class BookTableGateway {
         }
     }
 
-    public ArrayList bookList(){
+    public ArrayList bookList() {
 
         ArrayList<Book> books = new ArrayList<>();
         try {
@@ -290,19 +283,6 @@ public class BookTableGateway {
 					book.setBookID(newId);
 				} else {
                     update(book);
-                    //while(rs.next()) {
-                    //	if (book.getBookID() == rs.getInt("id") && book.getLastModified().equals(rs.getTimestamp("last_modified").toLocalDateTime())){
-                    //		logger.info("Timestamps match. Update successful.");
-                    //		update(book);
-                    //	}
-                    //	else if (book.getBookID() == rs.getInt("id") && !book.getLastModified().equals(rs.getTimestamp("last_modified").toLocalDateTime())){
-                    //		logger.info("Timestamps do not match.");
-                    //		Alert a = new Alert(AlertType.ERROR);
-                    //		a.setContentText("Changes could not be saved. Please fetch most recent version from book list");
-                    //		a.show();
-                    //		throw new BookException("Changes could not be saved. Please fetch most recent version from book list");
-                    //	}
-                    //}
                 }
 			} catch (Exception e) {
 				e.printStackTrace();

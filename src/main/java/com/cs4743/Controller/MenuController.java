@@ -51,8 +51,6 @@ public class MenuController implements Initializable {
     @FXML
     private Button auditTrailButton;
 
-    //alert
-
     public static ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
     public static ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
     public static ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -69,81 +67,13 @@ public class MenuController implements Initializable {
             instance = new MenuController();
         return instance;
     }
+
     /*
+    Received action from menu item
+    Check what screen we are on first and log that
+    */
     @FXML
     void clickMenuItem(ActionEvent event){
-        book = new Book();
-        Optional<ButtonType> saveMenuResult = alert.showAndWait();
-
-        if(event.getSource() == closeAppMenuItem && BookListController.bdc.checkSelection()
-                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
-            logger.info("Close App menu Item clicked");
-
-            if (saveMenuResult.get() == yes) {
-                logger.info("Yes was pressed");
-                BookListController.bdc.fireSave();
-                saveMenuResult = stopBookTableGateway();
-            } else if (saveMenuResult.get() == no) {
-                logger.info("No was pressed");
-                saveMenuResult = stopBookTableGateway();
-            } else if (saveMenuResult.get() == cancel)
-                logger.info("Cancel was pressed");
-            else {
-                logger.info("No changes on the model were found");
-                saveMenuResult = stopBookTableGateway();
-            }
-        } else if(event.getSource() == showBookListMenuItem && BookListController.bdc.checkSelection()
-                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
-            logger.info("Book List menu item clicked.");
-
-            if (saveMenuResult.get() == yes) {
-                logger.info("Yes was pressed");
-                BookListController.bdc.fireSave();
-                saveMenuResult = switchBookListView();
-            } else if (saveMenuResult.get() == no) {
-                logger.info("No was pressed");
-                saveMenuResult = switchBookListView();
-            } else if (saveMenuResult.get() == cancel)
-                logger.info("Cancel was pressed");
-            else {
-                logger.info("No changes to the model were found");
-                saveMenuResult = switchBookListView();
-            }
-        } else if(event.getSource() == newBookMenuItem && BookListController.bdc.checkSelection()
-                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
-            logger.info("New Book menu item clicked");
-
-            if (BookListController.bdc == null) {
-                logger.info("Book Detail Controller is null");
-                List<Book> books = BookTableGateway.getInstance().bookList();
-                BookListController.setSelected(books.get(0));
-                switchView(ViewType.BOOKDETAILVIEW);
-            }
-
-            if (saveMenuResult.get() == yes) {
-                logger.info("Yes was pressed");
-                BookListController.bdc.fireSave();
-                saveMenuResult = addBookView();
-            } else if (saveMenuResult.get() == no) {
-                logger.info("No was pressed");
-                saveMenuResult = addBookView();
-            } else if (saveMenuResult.get() == cancel)
-                logger.info("Cancel was pressed");
-            else {
-                logger.info("No changes to the model were found");
-                saveMenuResult = addBookView();
-            }
-        }
-    }*/
-
-
-    @FXML
-    void clickMenuItem(ActionEvent event){
-
-        /*
-        Received action from menu item
-        Check what screen we are on first and log that
-        */
         logger.info(controller);
         logger.info(event.getSource());
         if(controller instanceof BookDetailController){
@@ -157,29 +87,12 @@ public class MenuController implements Initializable {
         } else if(event.getSource() == newBookMenuItem){
             switchView(ViewType.NEWBOOKVIEW);
         }
-        /*
-        book = new Book();
-        Optional<ButtonType> saveMenuResult = alert.showAndWait();
-        if(event.getSource() == closeAppMenuItem && BookListController.bdc.checkSelection()
-                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
-            cleanup();
-        } else if(event.getSource() == showBookListMenuItem && BookListController.bdc.checkSelection()
-                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
-            logger.info("Book List menu item clicked.");
-            cleanup2();
-        } else if(event.getSource() == newBookMenuItem && BookListController.bdc.checkSelection()
-                && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
-            cleanup3();
-        }
-        */
-
     }
 
     private boolean cleanup(BookDetailController controller){
         if(!controller.checkForChanges())
             return  stopBookTableGateway();
         Optional<ButtonType> saveMenuResult = alert.showAndWait();
-        //logger.info("Close App menu Item clicked");
         if (saveMenuResult.get() == yes) {
             logger.info("Yes was pressed");
             controller.fireSave();
@@ -244,7 +157,6 @@ public class MenuController implements Initializable {
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-        //Platform.exit();
         return true;
     }
 
@@ -275,7 +187,6 @@ public class MenuController implements Initializable {
                 view = "BookListView.fxml";
                 List<Book> books = BookTableGateway.getInstance().bookList();
                 controller = BookListController.getBookListController(books, btg);
-                //logger.info(controller);
                 logger.info("Switching to BookListView");
                 break;
             case BOOKDETAILVIEW:
@@ -300,6 +211,7 @@ public class MenuController implements Initializable {
                 view = "AuditTrailView.fxml";
                 List<AuditTrailEntry> auditTrail = BookListController.getSelection().getAuditTrail();
                 controller = new AuditTrailController(auditTrail);
+                logger.info("Switching to AuditTrailView");
                 break;
         }
         try {
@@ -320,7 +232,6 @@ public class MenuController implements Initializable {
 
     public static Alert createAlert() {
 
-        //return new Alert(AlertType.CONFIRMATION);
         Alert alert = new Alert(AlertType.NONE, "Sample", yes, no, cancel);
         alert.setTitle("Warning: Attempting to exit page without saving changes.");
         alert.setContentText("Would you like to save your work?");

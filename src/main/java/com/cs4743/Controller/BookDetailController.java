@@ -102,6 +102,7 @@ public class BookDetailController implements Initializable, MasterController {
             }
             newBook.saveIsbn(isbnField.getText());
             newBook.setPublisherId(publisherComboBox.getValue().getId());
+
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
         } else {
@@ -124,12 +125,22 @@ public class BookDetailController implements Initializable, MasterController {
                 addAuditInfoUpdateBook(book.getBookID() ,"isbn", book.getIsbn(), isbnField.getText());
                 book.saveIsbn(isbnField.getText());
             }
-            book.setPublisherId(1);
+            
+            publisherComboBox.setValue(trackPublisher.get(0));
+        	for (int i = 0; i < trackPublisher.size(); i++){
+        		if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
+        			book.setPublisherId(trackPublisher.get(i).getId());
+                    logger.info("Entered edit publisher");
+        			break;
+        		}
+        	}
             try {
                 book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
             } catch (BookException e){
                 return;
             }
+            
+
 
 
 
@@ -142,9 +153,11 @@ public class BookDetailController implements Initializable, MasterController {
     @FXML
     void clickedAuditTrailButton(ActionEvent event) {
         logger.info("Clicked audit trail button");
+       // Optional<ButtonType> result = MenuController.alert.showAndWait();
+        
+        MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW); 
         /*
-        Optional<ButtonType> result = MenuController.alert.showAndWait();
-        if(event.getSource() == auditTrailButton && BookListController.bdc.checkbook()
+        if(event.getSource() == auditTrailButton && BookListController.bdc.checks()
              && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
                 logger.info("Selected auditTrailButton");
 
@@ -162,9 +175,7 @@ public class BookDetailController implements Initializable, MasterController {
                 } else {
 	                logger.info("No changes found");
                     result = switchAuditTrailView();
-                }   
-            MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW);
-        */
+                }   */
         }
 
     // launch save button
@@ -183,7 +194,7 @@ public class BookDetailController implements Initializable, MasterController {
     // updates the list of publishers on the detail view from the database list
     public void updatePubisherLists(List<Publisher> publisher){
         trackPublisher.clear();
-        for(int i=0; i< publisher.size(); i++){
+        for(int i = 0; i < publisher.size(); i++){
             publisherNameList.add(publisher.get(i).getPublisherName());
             trackPublisher.add(publisher.get(i));
         }

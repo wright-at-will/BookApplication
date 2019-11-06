@@ -34,15 +34,13 @@ public class AuditTrailController implements Initializable, MasterController {
     private Label bookTitleLabel;
 
     @FXML
-    void clickedBackToDetails(ActionEvent event) {
-        MenuController.getInstance().switchView(ViewType.BOOKDETAILVIEW);
-    }
+    void clickedBackToDetails(ActionEvent event) { MenuController.getInstance().switchView(ViewType.BOOKDETAILVIEW); }
 
     AuditTrailController() { }
 
     AuditTrailController(List<AuditTrailEntry> auditTrail){
         trackChanges.clear();
-        for(int i=0; i<auditTrail.size(); i++){
+        for(int i = 0; i < auditTrail.size(); i++){
             trackChanges.add(auditTrail.get(i));
         }
     }

@@ -8,7 +8,7 @@ import com.cs4743.Services.PublisherTableGateway;
 public class Publisher {
 
     private int id;
-    private String publisherName;
+    public String publisherName;
     public Timestamp date_added;
 
     private PublisherTableGateway gateway;
