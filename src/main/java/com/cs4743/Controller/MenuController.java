@@ -53,10 +53,10 @@ public class MenuController implements Initializable {
 
     //alert
 
-    public ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-    public ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
-    public ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-    public Alert alert = createAlert();
+    public static ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+    public static ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
+    public static ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+    public static Alert alert = createAlert();
 
     private MenuController(){ }
 
@@ -318,7 +318,7 @@ public class MenuController implements Initializable {
         borderPane.setCenter(viewNode);
     }
 
-    public Alert createAlert() {
+    public static Alert createAlert() {
 
         //return new Alert(AlertType.CONFIRMATION);
         Alert alert = new Alert(AlertType.NONE, "Sample", yes, no, cancel);

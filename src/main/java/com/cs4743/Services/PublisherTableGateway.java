@@ -26,8 +26,7 @@ public class PublisherTableGateway extends Application{
             ResultSet rs = stmt.executeQuery(query);
 
             while(rs.next()){
-                Publisher publisher = new Publisher(rs.getInt("id"), rs.getString("publisherName"), 
-                		rs.getTimestamp("date_added"));
+                Publisher publisher = new Publisher(rs.getInt("id"), rs.getString("publisher_name"), rs.getTimestamp("date_added"));
                 publisherList.add(publisher);
             }
         } catch(SQLException err){

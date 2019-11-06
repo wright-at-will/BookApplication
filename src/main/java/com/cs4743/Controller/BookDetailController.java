@@ -4,6 +4,7 @@ import com.cs4743.Model.Book;
 import com.cs4743.Model.Publisher;
 import com.cs4743.Services.BookException;
 import com.cs4743.Services.BookTableGateway;
+import com.cs4743.Services.PublisherTableGateway;
 import com.cs4743.View.ViewType;
 
 import javafx.collections.FXCollections;
@@ -29,8 +30,9 @@ import org.apache.logging.log4j.Logger;
 public class BookDetailController implements Initializable, MasterController {
 
     private static Logger logger = LogManager.getLogger(BookDetailController.class);
+    
     private BookTableGateway btg;
-
+    
     @FXML
     private TextField titleField, yearField, isbnField;
     @FXML
@@ -48,8 +50,8 @@ public class BookDetailController implements Initializable, MasterController {
 
     public static boolean verifyUserSaved = false;
 
-    //ObservableList<Publisher> trackPublisher = FXCollections.observableArrayList();
-    //ObservableList<String> publisherNameList = FXCollections.observableArrayList();
+    ObservableList<Publisher> trackPublisher = FXCollections.observableArrayList();
+    ObservableList<String> publisherNameList = FXCollections.observableArrayList();
 
     BookDetailController() {}
 
@@ -68,18 +70,19 @@ public class BookDetailController implements Initializable, MasterController {
             yearField.setText(book.pubYear>0?Integer.toString(book.getPubYear()):"");
             isbnField.setText(book.getIsbn());
 
-      //      for (int i = 0; i < trackPublisher.size(); i++) {
-      //          if (trackPublisher.get(i).getId() == book.getPublisherId()) {
-       //             publisherComboBox.setValue(trackPublisher.get(i).getPublisherName());
-       //             break;
-       //         }
-            //    }
+            for (int i = 0; i < trackPublisher.size(); i++) {
+                if (trackPublisher.get(i).getId() == book.getPublisherId()) {
+                    publisherComboBox.setValue(trackPublisher.get(i).getPublisherName());
+                    break;
+                    }
+                }
         }
         titleField.setPromptText("Title");
         summaryArea.setPromptText("Summary");
         yearField.setPromptText("Year Published");
         isbnField.setPromptText("ISBN");
-        //publisherComboBox.setValue(publisherNameList.get(1));
+                
+        publisherComboBox.setValue(publisherNameList.get(1));
     }
 
     @FXML
@@ -95,12 +98,12 @@ public class BookDetailController implements Initializable, MasterController {
                 newBook.setYearPublished(1455);
             }
             newBook.setIsbn(isbnField.getText());
-            /*for (int i = 0; i < trackPublisher.size(); i++){
+            for (int i = 0; i < trackPublisher.size(); i++){
                 if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
                     newBook.setPublisherId(trackPublisher.get(i).getId());
                     break;
                 }
-            }*/
+            }
             newBook.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
@@ -126,12 +129,12 @@ public class BookDetailController implements Initializable, MasterController {
             //book.setSummary(summaryArea.getText());
             //book.setYearPublished(Integer.parseInt(yearField.getText()));
             //book.setIsbn(isbnField.getText());
-            //for (int i = 0; i < trackPublisher.size(); i++){
-            //    if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
-            //        book.setPublisherId(trackPublisher.get(i).getId());
-            //        break;
-            //    }
-            //}
+            for (int i = 0; i < trackPublisher.size(); i++){
+                if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
+                    book.setPublisherId(trackPublisher.get(i).getId());
+                    break;
+                }
+            }
             try {
                 book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
             } catch (BookException e){
@@ -186,7 +189,7 @@ public class BookDetailController implements Initializable, MasterController {
 			return true;
 		}
 	}
-/*
+
     // updates the list of publishers on the detail view from the database list
     public void updatePubisherLists(List<Publisher> publisher){
         trackPublisher.clear();
@@ -195,7 +198,7 @@ public class BookDetailController implements Initializable, MasterController {
             trackPublisher.add(publisher.get(i));
         }
     }
-*/
+
     // adds audit info for a new book
     public void addAuditInfoNewBook(int bookID) throws SQLException{
         logger.info(bookID);
@@ -226,7 +229,7 @@ public class BookDetailController implements Initializable, MasterController {
                 book.getSummary().equals(summaryArea.getText()) &&
                 book.getPubYear() == Integer.parseInt(yearField.getText()) &&
                 book.getIsbn().equals(isbnField.getText())) {
-            return false;
+        	return false;
         } else {
             return true;
         }
@@ -258,6 +261,10 @@ public class BookDetailController implements Initializable, MasterController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    	List<Publisher> publishers = PublisherTableGateway.getInstance().fetchPublishers();
+    	updatePubisherLists(publishers);
+    	publisherComboBox.setEditable(true);
+    	publisherComboBox.setItems(publisherNameList);
         createViewDetails();
     }
 
