@@ -151,6 +151,7 @@ public class Book {
     public String getTitle() { return title; }
     public String getSummary() { return summary; }
     public int getPubYear() { return pubYear; }
+	public void setPubYear(int pubYear) { this.pubYear = pubYear; }
 
 	public LocalDateTime getLastModified() { return lastModified; }
 	public void setLastModified(LocalDateTime lastModified) { this.lastModified = lastModified; }

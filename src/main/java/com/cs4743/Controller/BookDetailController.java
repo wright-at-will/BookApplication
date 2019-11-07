@@ -32,7 +32,7 @@ public class BookDetailController implements Initializable, MasterController {
     private static Logger logger = LogManager.getLogger(BookDetailController.class);
     
     private BookTableGateway btg;
-    
+     
     @FXML
     private TextField titleField, yearField, isbnField;
     @FXML
@@ -46,9 +46,9 @@ public class BookDetailController implements Initializable, MasterController {
     @FXML
     private ComboBox<Publisher> publisherComboBox;
 
-    public static Book book;
-    public static Book tempBook;
-    private boolean tempBookExists = false;
+    private static Book book;
+    private static Book tempBook;
+    public static boolean tempBookExists = false;
 
     public static boolean verifyUserSaved = false;
 
@@ -107,10 +107,10 @@ public class BookDetailController implements Initializable, MasterController {
 
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
-        } else if (book.getBookID() > 0 /*&& !tempBookExists*/) {
+        } else if (book.getBookID() > 0) {
 
             logger.info("Save button was clicked and book exists");
-
+            
             if(checkTitle()) {
                 addAuditInfoUpdateBook(book.getBookID() ,"title", book.getTitle(), titleField.getText());
                 book.saveTitle(titleField.getText());
@@ -138,73 +138,16 @@ public class BookDetailController implements Initializable, MasterController {
         	}
             try {
                 book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
-                tempBook = null;
-                tempBookExists = false;
+
             } catch (BookException e){
                 return;
             }
             
             logger.info("Save button was clicked");
-        } /*else if (tempBookExists) {
-
-            logger.info("Save Button was clicked. We're comparing tempbook vs original.");
-
-            if(checkTitle(tempBook)) {
-                addAuditInfoUpdateBook(tempBook.getBookID() ,"title", tempBook.getTitle(), titleField.getText());
-                tempBook.saveTitle(titleField.getText());
-            }
-            if(checkSummary(tempBook)) {
-                addAuditInfoUpdateBook(tempBook.getBookID() ,"summary", tempBook.getSummary(), summaryArea.getText());
-                tempBook.saveSummary(summaryArea.getText());
-            }
-            if(checkPubYear(tempBook)) {
-                addAuditInfoUpdateBookInteger(tempBook.getBookID() ,"year_published", tempBook.getPubYear(), Integer.parseInt(yearField.getText()));
-                tempBook.saveYear(yearField.getText());
-            }
-            if(checkIsbn(tempBook)) {
-                addAuditInfoUpdateBook(tempBook.getBookID() ,"isbn", tempBook.getIsbn(), isbnField.getText());
-                tempBook.saveIsbn(isbnField.getText());
-            }
-            
-            publisherComboBox.setValue(trackPublisher.get(0));
-        	for (int i = 0; i < trackPublisher.size(); i++){
-        		if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
-        			tempBook.setPublisherId(trackPublisher.get(i).getId());
-                    logger.info("Entered edit publisher");
-        			break;
-        		}
-        	}
-            try {
-                book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
-                tempBook = null;
-                tempBookExists = false;
-            } catch (BookException e){
-                return;
-            }
-            
-            logger.info("Save button was clicked");
-        } */
+        } 
 
         MenuController.getInstance().switchView(ViewType.BOOKLISTVIEW);
     }
-
-    @FXML
-    void clickedAuditTrailButton(ActionEvent event) {
-        logger.info("Clicked audit trail button");
-        tempBook = new Book();
-        tempBook.setBookID(book.getBookID());
-        tempBook.saveTitle(titleField.getText());
-        tempBook.saveSummary(summaryArea.getText());  
-        tempBook.saveYear(yearField.getText());
-        tempBook.saveIsbn(isbnField.getText());
-        publisherComboBox.setValue(trackPublisher.get(0));
-        tempBookExists = true;
-        logger.info("Temp Book Created");
-           
-        MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW); 
-    }
-  
-        
 
     // launch save button
     public void fireSave(){
@@ -258,29 +201,7 @@ public class BookDetailController implements Initializable, MasterController {
         return checkTitle() || checkSummary() || checkPubYear() || checkIsbn();
 
     }
-    private boolean checkTitle(Book book){
-        return check(book.getTitle(),titleField.getText());
-    }
-    private boolean checkSummary(Book book){
-        return check(book.getSummary(),summaryArea.getText());
-    }
-
-    private boolean checkPubYear(Book book) {
-        try {
-            return book.getPubYear() != Integer.parseInt(yearField.getText());
-
-        } catch (Exception e){
-            if(yearField.getText().length() > 0)
-                return true;
-            if(book.getPubYear() == 0)
-                return false;
-            return true;
-        }
-    }
-    private boolean checkIsbn(Book book){
-        return check(book.getIsbn(),isbnField.getText());
-    }
-    
+  
     private boolean checkTitle(){
         return check(book.getTitle(),titleField.getText());
     }
@@ -322,16 +243,11 @@ public class BookDetailController implements Initializable, MasterController {
             return true;
         }
     }
-
+    
 
     //Tests if the book has been changed, returns false if not
     public Boolean checks(){
         return checkForChanges();
-    }
-    public Optional<ButtonType> switchAuditTrailView() {
-        MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW);
-        BookDetailController.verifyUserSaved = false;
-        return null;
     }
 
     @Override
@@ -341,6 +257,40 @@ public class BookDetailController implements Initializable, MasterController {
     	publisherComboBox.setEditable(true);
     	publisherComboBox.setItems(trackPublisher);
         createViewDetails();
+    }
+    
+    @FXML
+    void clickedAuditTrailButton(ActionEvent event) {
+        MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW); 
+    	createTemp();
+    }
+    
+    public void createTemp() {
+        logger.info("Clicked audit trail button");
+        tempBook = new Book();
+        tempBook.setBookID(book.getBookID());
+        tempBook.saveTitle(titleField.getText());
+        tempBook.saveSummary(summaryArea.getText());  
+        tempBook.saveYear(yearField.getText());
+        tempBook.saveIsbn(isbnField.getText());
+        publisherComboBox.setValue(trackPublisher.get(0));
+        BookDetailController.tempBookExists = true;
+        logger.info("Temp Book Created");  
+        AuditTrailController.moveTempToAudit(tempBook);
+    }
+    
+    public static void restoreBook(Book tempBook) {
+        if (tempBookExists) {
+            book.setBookID(tempBook.getBookID());
+            book.saveTitle(tempBook.getTitle());
+            book.saveSummary(tempBook.getSummary());  
+            book.saveYear(String.valueOf(tempBook.getPubYear()));
+            book.saveIsbn(tempBook.getIsbn());
+            //publisherComboBox.setValue(trackPublisher.get(0));
+            tempBook = null;
+            tempBookExists = false;
+            logger.info("Temp Book Destroyed");      	
+        }
     }
 
 }

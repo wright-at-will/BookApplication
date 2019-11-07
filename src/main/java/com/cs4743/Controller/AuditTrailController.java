@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.cs4743.Model.AuditTrailEntry;
+import com.cs4743.Model.Book;
 import com.cs4743.View.ViewType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +24,10 @@ public class AuditTrailController implements Initializable, MasterController {
     private static Logger log = LogManager.getLogger(BookListController.class);
 
     public static ObservableList<AuditTrailEntry> trackChanges = FXCollections.observableArrayList();
+    
+    private BookDetailController bdc;
+    
+    private static Book book;
 
     @FXML
     private ListView<AuditTrailEntry> auditTrailList;
@@ -35,7 +40,7 @@ public class AuditTrailController implements Initializable, MasterController {
 
     @FXML
     void clickedBackToDetails(ActionEvent event) { 
-    	BookDetailController.book = BookDetailController.tempBook;
+    	BookDetailController.restoreBook(book);
     	MenuController.getInstance().switchView(ViewType.BOOKDETAILVIEW); 
     }
 
@@ -68,6 +73,17 @@ public class AuditTrailController implements Initializable, MasterController {
             }
         });
 
+    }
+    
+    public static void moveTempToAudit(Book tempBook) {
+        log.info("Moved temp to audit");
+        book = new Book();
+		book.setBookID(tempBook.getBookID());
+        book.saveTitle(tempBook.getTitle());
+        book.saveSummary(tempBook.getSummary());  
+        book.saveYear(String.valueOf(tempBook.getPubYear()));
+        book.saveIsbn(tempBook.getIsbn());
+        tempBook = null;
     }
 
 
