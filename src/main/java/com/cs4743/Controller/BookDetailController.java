@@ -90,18 +90,18 @@ public class BookDetailController implements Initializable, MasterController {
     public void clickedSaveButton(ActionEvent event) throws SQLException {
         if (book.getBookID() == 0) {
             Book newBook = new Book();
-            newBook.saveTitle(summaryArea.getText());
-            newBook.saveSummary(summaryArea.getText());
-            try{
-                newBook.saveYear(yearField.getText());
-            } catch (NumberFormatException err){
-                logger.info("Empty String could not be converted to int. Replaced year published with default 1455");
-                newBook.saveYear("1455");
-            }
-            newBook.saveIsbn(isbnField.getText());
+            //newBook.saveTitle(titleField.getText());
+            //newBook.saveSummary(summaryArea.getText());
+            //try{
+            //    newBook.saveYear(yearField.getText());
+            //} catch (NumberFormatException err){
+            //    logger.info("Empty String could not be converted to int. Replaced year published with default 1455");
+            //    newBook.saveYear("1455");
+           // }
+            //newBook.saveIsbn(isbnField.getText());
             //newBook.setPublisherId(publisherComboBox.getValue().getId());
-            newBook.setPublisher(publisherComboBox.getValue());
-            addAuditInfoNewBook(newBook.getBookID());
+            //newBook.setPublisher(publisherComboBox.getItems().get(publisherComboBox.getSelectionModel().getSelectedIndex()));
+            newBook.save(0,titleField.getText(),summaryArea.getText(),yearField.getText(),isbnField.getText(),publisherComboBox.getItems().get(publisherComboBox.getSelectionModel().getSelectedIndex()));
             logger.info("Save button was clicked");
         } else if (book.getBookID() > 0) {
 
@@ -168,12 +168,7 @@ public class BookDetailController implements Initializable, MasterController {
         //}
     }
 
-    // adds audit info for a new book
-    public void addAuditInfoNewBook(int bookID) throws SQLException {
-        logger.info(bookID);
 
-        btg.insertAuditTrailEntry(bookID, "Book added");
-    }
 
     // adds audit info for an updated book string
     public void addAuditInfoUpdateBook(int bookID, String field, String previousValue, String newValue) throws SQLException {
@@ -252,6 +247,7 @@ public class BookDetailController implements Initializable, MasterController {
     	updatePubisherLists(publishers);
     	publisherComboBox.setEditable(true);
     	publisherComboBox.setItems(trackPublisher);
+    	publisherComboBox.setValue(publishers.get(0));
         createViewDetails();
     }
     

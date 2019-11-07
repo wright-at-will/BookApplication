@@ -127,6 +127,7 @@ public class BookTableGateway {
             rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
             rs.next();
             int id = rs.getInt(1);
+            insertAuditTrailEntry(book.getBookID(),"Book added");
             closeConnection();
             return id;
         } catch (Exception e){
