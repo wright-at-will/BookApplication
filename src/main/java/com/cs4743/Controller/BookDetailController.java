@@ -70,7 +70,8 @@ public class BookDetailController implements Initializable, MasterController {
 
             publisherComboBox.setItems(trackPublisher);
             try {
-                publisherComboBox.setValue(book.getPublisher());
+                publisherComboBox.getSelectionModel().select(book.getPublisher());
+                //publisherComboBox.setValue(publisherComboBox);
             } catch (Exception e){
 
             }
@@ -80,7 +81,7 @@ public class BookDetailController implements Initializable, MasterController {
         yearField.setPromptText("Year Published");
         isbnField.setPromptText("ISBN");
 
-        publisherComboBox.setValue(trackPublisher.get(0));
+        //publisherComboBox.setValue(trackPublisher.get(0));
         //
         // publisherComboBox.setValue(publisherNameList.get(0));
     }
@@ -123,7 +124,7 @@ public class BookDetailController implements Initializable, MasterController {
                 book.saveIsbn(isbnField.getText());
             }
             
-            publisherComboBox.setValue(trackPublisher.get(0));
+            //publisherComboBox.setValue(trackPublisher.get(0));
         	//for (int i = 0; i < trackPublisher.size(); i++){
         	//	if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
         	//		book.setPublisher(trackPublisher.get(i));
@@ -133,7 +134,7 @@ public class BookDetailController implements Initializable, MasterController {
             logger.info("Value is: " + publisherComboBox.getSelectionModel().getSelectedItem());
         	//}
             try {
-                book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText(), publisherComboBox.getValue());
+                book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText(), publisherComboBox.getItems().get(publisherComboBox.getSelectionModel().getSelectedIndex()));
             } catch (BookException e){
                 return;
             }
