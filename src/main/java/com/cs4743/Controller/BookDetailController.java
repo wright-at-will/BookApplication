@@ -284,4 +284,8 @@ public class BookDetailController implements Initializable, MasterController {
             		"\nBook Year: " + book.getPubYear() + "\nBook ISBN: " + book.getIsbn() + "\nBook Summary: " + book.getSummary());
     }
 
+    public void print(){
+        System.out.printf("%s\n%s\n%s\n%s\n", titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
+    }
+
 }

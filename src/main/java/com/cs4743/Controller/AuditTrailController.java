@@ -48,11 +48,12 @@ public class AuditTrailController implements Initializable, MasterController {
 
     AuditTrailController() { }
 
-    AuditTrailController(List<AuditTrailEntry> auditTrail){
+    AuditTrailController(List<AuditTrailEntry> auditTrail, BookDetailController bdc){
         trackChanges.clear();
         for(int i = 0; i < auditTrail.size(); i++){
             trackChanges.add(auditTrail.get(i));
         }
+        this.bdc = bdc;
     }
 
     @Override
@@ -89,6 +90,10 @@ public class AuditTrailController implements Initializable, MasterController {
         System.out.println("===Inside AuditTrailController ===\nBook ID: " + book.getBookID() + "\nBook Title: " + book.getTitle() + 
         		"\nBook Year: " + book.getPubYear() + "\nBook ISBN: " + book.getIsbn() + "\nBook Summary: " + book.getSummary());
         
+    }
+
+    public BookDetailController getBDC(){
+        return bdc;
     }
 
 
