@@ -46,7 +46,9 @@ public class BookDetailController implements Initializable, MasterController {
     @FXML
     private ComboBox<Publisher> publisherComboBox;
 
-    private Book book;
+    public static Book book;
+    public static Book tempBook;
+    private boolean tempBookExists = false;
 
     public static boolean verifyUserSaved = false;
 
@@ -105,7 +107,7 @@ public class BookDetailController implements Initializable, MasterController {
 
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
-        } else {
+        } else if (book.getBookID() > 0 /*&& !tempBookExists*/) {
 
             logger.info("Save button was clicked and book exists");
 
@@ -136,16 +138,52 @@ public class BookDetailController implements Initializable, MasterController {
         	}
             try {
                 book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
+                tempBook = null;
+                tempBookExists = false;
             } catch (BookException e){
                 return;
             }
             
-
-
-
-
             logger.info("Save button was clicked");
-        }
+        } /*else if (tempBookExists) {
+
+            logger.info("Save Button was clicked. We're comparing tempbook vs original.");
+
+            if(checkTitle(tempBook)) {
+                addAuditInfoUpdateBook(tempBook.getBookID() ,"title", tempBook.getTitle(), titleField.getText());
+                tempBook.saveTitle(titleField.getText());
+            }
+            if(checkSummary(tempBook)) {
+                addAuditInfoUpdateBook(tempBook.getBookID() ,"summary", tempBook.getSummary(), summaryArea.getText());
+                tempBook.saveSummary(summaryArea.getText());
+            }
+            if(checkPubYear(tempBook)) {
+                addAuditInfoUpdateBookInteger(tempBook.getBookID() ,"year_published", tempBook.getPubYear(), Integer.parseInt(yearField.getText()));
+                tempBook.saveYear(yearField.getText());
+            }
+            if(checkIsbn(tempBook)) {
+                addAuditInfoUpdateBook(tempBook.getBookID() ,"isbn", tempBook.getIsbn(), isbnField.getText());
+                tempBook.saveIsbn(isbnField.getText());
+            }
+            
+            publisherComboBox.setValue(trackPublisher.get(0));
+        	for (int i = 0; i < trackPublisher.size(); i++){
+        		if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
+        			tempBook.setPublisherId(trackPublisher.get(i).getId());
+                    logger.info("Entered edit publisher");
+        			break;
+        		}
+        	}
+            try {
+                book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
+                tempBook = null;
+                tempBookExists = false;
+            } catch (BookException e){
+                return;
+            }
+            
+            logger.info("Save button was clicked");
+        } */
 
         MenuController.getInstance().switchView(ViewType.BOOKLISTVIEW);
     }
@@ -153,30 +191,20 @@ public class BookDetailController implements Initializable, MasterController {
     @FXML
     void clickedAuditTrailButton(ActionEvent event) {
         logger.info("Clicked audit trail button");
-       // Optional<ButtonType> result = MenuController.alert.showAndWait();
-        
+        tempBook = new Book();
+        tempBook.setBookID(book.getBookID());
+        tempBook.saveTitle(titleField.getText());
+        tempBook.saveSummary(summaryArea.getText());  
+        tempBook.saveYear(yearField.getText());
+        tempBook.saveIsbn(isbnField.getText());
+        publisherComboBox.setValue(trackPublisher.get(0));
+        tempBookExists = true;
+        logger.info("Temp Book Created");
+           
         MenuController.getInstance().switchView(ViewType.AUDITTRAILVIEW); 
-        /*
-        if(event.getSource() == auditTrailButton && BookListController.bdc.checks()
-             && (BookListController.bdc.checkForChanges() || BookListController.bdc.checkForChangesNewBook())) {
-                logger.info("Selected auditTrailButton");
-
-                if(result.get() == MenuController.yes){
-                    logger.info("Yes was pressed");
-                    BookListController.bdc.fireSave();
-                    result = switchAuditTrailView();
-                }
-                else if (result.get() == MenuController.no){
-                    logger.info("No was pressed");
-                    result = switchAuditTrailView();
-                }
-                else if (result.get() == MenuController.cancel)
-                    logger.info("Cancel was pressed");
-                } else {
-	                logger.info("No changes found");
-                    result = switchAuditTrailView();
-                }   */
-        }
+    }
+  
+        
 
     // launch save button
     public void fireSave(){
@@ -202,21 +230,21 @@ public class BookDetailController implements Initializable, MasterController {
     }
 
     // adds audit info for a new book
-    public void addAuditInfoNewBook(int bookID) throws SQLException{
+    public void addAuditInfoNewBook(int bookID) throws SQLException {
         logger.info(bookID);
 
         btg.insertAuditTrailEntry(bookID, "Book added");
     }
 
     // adds audit info for an updated book string
-    public void addAuditInfoUpdateBook(int bookID, String field, String previousValue, String newValue) throws SQLException{
+    public void addAuditInfoUpdateBook(int bookID, String field, String previousValue, String newValue) throws SQLException {
         String message = field + " changed from \"" + previousValue + "\" to \"" + newValue + "\"";
 
         btg.insertAuditTrailEntry(bookID, message);
     }
 
     // adds audit info for an updated book int
-    public void addAuditInfoUpdateBookInteger(int bookID, String field, int previousValue, int newValue) throws SQLException{
+    public void addAuditInfoUpdateBookInteger(int bookID, String field, int previousValue, int newValue) throws SQLException {
         String message = field + " changed from \"" + previousValue + "\" to \"" + newValue + "\"";
 
         btg.insertAuditTrailEntry(bookID, message);
@@ -230,6 +258,29 @@ public class BookDetailController implements Initializable, MasterController {
         return checkTitle() || checkSummary() || checkPubYear() || checkIsbn();
 
     }
+    private boolean checkTitle(Book book){
+        return check(book.getTitle(),titleField.getText());
+    }
+    private boolean checkSummary(Book book){
+        return check(book.getSummary(),summaryArea.getText());
+    }
+
+    private boolean checkPubYear(Book book) {
+        try {
+            return book.getPubYear() != Integer.parseInt(yearField.getText());
+
+        } catch (Exception e){
+            if(yearField.getText().length() > 0)
+                return true;
+            if(book.getPubYear() == 0)
+                return false;
+            return true;
+        }
+    }
+    private boolean checkIsbn(Book book){
+        return check(book.getIsbn(),isbnField.getText());
+    }
+    
     private boolean checkTitle(){
         return check(book.getTitle(),titleField.getText());
     }

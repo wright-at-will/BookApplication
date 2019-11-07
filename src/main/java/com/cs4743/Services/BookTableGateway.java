@@ -253,8 +253,8 @@ public class BookTableGateway {
         Statement stmt = null;
         try{
             String query = "SELECT * FROM book_audit_trail ORDER BY date_added ASC ";
-            stmt = getConnection(Connection.TRANSACTION_READ_COMMITTED).createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            //stmt = getConnection(Connection.TRANSACTION_READ_COMMITTED).createStatement();
+            //ResultSet rs = stmt.executeQuery(query);
 
             while(rs.next()){
                 if (rs.getInt("book_id") == bookId){
