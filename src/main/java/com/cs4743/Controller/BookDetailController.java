@@ -38,17 +38,11 @@ public class BookDetailController implements Initializable, MasterController {
     @FXML
     private TextArea summaryArea;
     @FXML
-    private Button saveButton, editButton;
-
-    @FXML
-    private Button auditTrailButton;
-
+    private Button saveButton, editButton, auditTrailButton;
     @FXML
     private ComboBox<Publisher> publisherComboBox;
 
-    private static Book book;
-    private static Book tempBook;
-    public static boolean tempBookExists = false;
+    private static Book book, tempBook;
 
     public static boolean verifyUserSaved = false;
 
@@ -64,6 +58,8 @@ public class BookDetailController implements Initializable, MasterController {
 
     // format output for the detail view
     public void createViewDetails(){
+        System.out.println("===Inside BookDetailController: createViewDetails ===\nBook ID: " + book.getBookID() + "\nBook Title: " + book.getTitle() + 
+        		"\nBook Year: " + book.getPubYear() + "\nBook ISBN: " + book.getIsbn() + "\nBook Summary: " + book.getSummary());
         auditTrailButton.setDisable(true);
         if(book != null && book.getBookID() > 0) {
             auditTrailButton.setDisable(false);
@@ -138,7 +134,6 @@ public class BookDetailController implements Initializable, MasterController {
         	}
             try {
                 book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
-
             } catch (BookException e){
                 return;
             }
@@ -274,13 +269,11 @@ public class BookDetailController implements Initializable, MasterController {
         tempBook.saveYear(yearField.getText());
         tempBook.saveIsbn(isbnField.getText());
         publisherComboBox.setValue(trackPublisher.get(0));
-        BookDetailController.tempBookExists = true;
         logger.info("Temp Book Created");  
         AuditTrailController.moveTempToAudit(tempBook);
     }
     
     public static void restoreBook(Book tempBook) {
-        if (tempBookExists) {
             book.setBookID(tempBook.getBookID());
             book.saveTitle(tempBook.getTitle());
             book.saveSummary(tempBook.getSummary());  
@@ -288,9 +281,9 @@ public class BookDetailController implements Initializable, MasterController {
             book.saveIsbn(tempBook.getIsbn());
             //publisherComboBox.setValue(trackPublisher.get(0));
             tempBook = null;
-            tempBookExists = false;
-            logger.info("Temp Book Destroyed");      	
-        }
+            logger.info("Temp Book Destroyed"); 
+            System.out.println("===Inside BookDetailController: restoreBook ===\nBook ID: " + book.getBookID() + "\nBook Title: " + book.getTitle() + 
+            		"\nBook Year: " + book.getPubYear() + "\nBook ISBN: " + book.getIsbn() + "\nBook Summary: " + book.getSummary());
     }
 
 }

@@ -84,6 +84,9 @@ public class AuditTrailController implements Initializable, MasterController {
         book.saveYear(String.valueOf(tempBook.getPubYear()));
         book.saveIsbn(tempBook.getIsbn());
         tempBook = null;
+        System.out.println("===Inside AuditTrailController ===\nBook ID: " + book.getBookID() + "\nBook Title: " + book.getTitle() + 
+        		"\nBook Year: " + book.getPubYear() + "\nBook ISBN: " + book.getIsbn() + "\nBook Summary: " + book.getSummary());
+        
     }
 
 
