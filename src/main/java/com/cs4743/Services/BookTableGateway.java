@@ -51,7 +51,8 @@ public class BookTableGateway {
                     "UPDATE `Book` SET" +
                             "`title`=?,`summary`=?,`year_published`=?,`isbn`=?" +
                             "WHERE `id` = ?",
-                    "SELECT * FROM Book WHERE id = ? FOR UPDATE",
+                    "SELECT Book.*,publisher.publisher_name,publisher.date_added FROM `Book` INNER JOIN `publisher` on Book.publisher_id = publisher.id WHERE Book.id = ? FOR UPDATE",
+                    //"SELECT * FROM Book WHERE id = ? FOR UPDATE",
                     "SELECT id, title FROM Book",
                     "DELETE FROM `Book` WHERE `id` = ?"
             };
@@ -87,6 +88,8 @@ public class BookTableGateway {
                 query.append(", `year_published` = ? ");
                 params.add(book.getIsbn());
                 query.append(", `isbn` = ? ");
+                params.add(book.getPublisher().getId());
+                query.append(", publisher_id = ? ");
             query.append("WHERE `id` = ? ");
             params.add(bookID);
             getResultSet(params, query.toString(), Connection.TRANSACTION_REPEATABLE_READ);
@@ -251,6 +254,7 @@ public class BookTableGateway {
     public List<AuditTrailEntry> getAuditTrail(int bookId) {
         List<AuditTrailEntry> auditTrail = new ArrayList<AuditTrailEntry>();
         try{
+            logger.info("Inside get audit trail");
             String query = "SELECT * FROM book_audit_trail WHERE book_id = ? ORDER BY date_added ASC ";
             //stmt = getConnection(Connection.TRANSACTION_READ_COMMITTED).createStatement();
             //ResultSet rs = stmt.executeQuery(query);

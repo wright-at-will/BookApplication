@@ -1,5 +1,7 @@
 package com.cs4743.Model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -17,6 +19,12 @@ public class Publisher {
     	id = this.id;
         publisherName = this.publisherName;
         date_added = this.date_added;
+    }
+
+    public Publisher(ResultSet rs) throws SQLException {
+        id = rs.getInt("publisher_id");
+        publisherName = rs.getString("publisher_name");
+        date_added = rs.getTimestamp("date_added");
     }
 
     @Override

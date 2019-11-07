@@ -47,7 +47,7 @@ public class BookDetailController implements Initializable, MasterController {
     public static boolean verifyUserSaved = false;
 
     ObservableList<Publisher> trackPublisher = FXCollections.observableArrayList();
-    ObservableList<String> publisherNameList = FXCollections.observableArrayList();
+    //ObservableList<String> publisherNameList = FXCollections.observableArrayList();
 
     BookDetailController() {}
 
@@ -68,13 +68,12 @@ public class BookDetailController implements Initializable, MasterController {
             yearField.setText(book.pubYear>0?Integer.toString(book.getPubYear()):"");
             isbnField.setText(book.getIsbn());
 
-            //for (int i = 0; i < trackPublisher.size(); i++) {
-            //    if (trackPublisher.get(i).getId() == book.getPublisherId()) {
-            //        publisherComboBox.setValue(trackPublisher.get(i).getPublisherName());
-            //        break;
-            //        }
-            //    }
             publisherComboBox.setItems(trackPublisher);
+            try {
+                publisherComboBox.setValue(book.getPublisher());
+            } catch (Exception e){
+
+            }
         }
         titleField.setPromptText("Title");
         summaryArea.setPromptText("Summary");
@@ -99,8 +98,8 @@ public class BookDetailController implements Initializable, MasterController {
                 newBook.saveYear("1455");
             }
             newBook.saveIsbn(isbnField.getText());
-            newBook.setPublisherId(publisherComboBox.getValue().getId());
-
+            //newBook.setPublisherId(publisherComboBox.getValue().getId());
+            newBook.setPublisher(publisherComboBox.getValue());
             addAuditInfoNewBook(newBook.getBookID());
             logger.info("Save button was clicked");
         } else if (book.getBookID() > 0) {
@@ -125,15 +124,16 @@ public class BookDetailController implements Initializable, MasterController {
             }
             
             publisherComboBox.setValue(trackPublisher.get(0));
-        	for (int i = 0; i < trackPublisher.size(); i++){
-        		if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
-        			book.setPublisherId(trackPublisher.get(i).getId());
-                    logger.info("Entered edit publisher");
-        			break;
-        		}
-        	}
+        	//for (int i = 0; i < trackPublisher.size(); i++){
+        	//	if(trackPublisher.get(i).getPublisherName().equals(publisherComboBox.getValue())){
+        	//		book.setPublisher(trackPublisher.get(i));
+            //        logger.info("Entered edit publisher");
+        	//		break;
+        	//	}
+            logger.info("Value is: " + publisherComboBox.getSelectionModel().getSelectedItem());
+        	//}
             try {
-                book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText());
+                book.save(book.getBookID(), titleField.getText(), summaryArea.getText(), yearField.getText(), isbnField.getText(), publisherComboBox.getValue());
             } catch (BookException e){
                 return;
             }

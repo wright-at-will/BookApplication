@@ -18,7 +18,8 @@ public class Book {
     public String summary;
     public int pubYear;
     public String isbn;
-	public int publisherId = 1;
+    private Publisher publisher;
+	//public int publisherId = 1;
 	public LocalDateTime lastModified = null;
 
     public Book(){
@@ -32,7 +33,7 @@ public class Book {
         this.pubYear = pubYear;
         this.isbn = isbn;
         lastModified = this.getLastModified();
-        publisherId = this.getPublisherId();
+        //publisherId = this.getPublisherId();
     }
 
     public Book(int bookID, String title){
@@ -48,16 +49,18 @@ public class Book {
         summary = rs.getString("summary");
         pubYear = rs.getInt("year_published");
         isbn = rs.getString("isbn");
+        publisher = new Publisher(rs);
     }
 
     //Save handles all the setters at once
-	public void save(int id, String title, String summary, String pubYear, String isbn) throws BookException{
+	public void save(int id, String title, String summary, String pubYear, String isbn, Publisher publisher) throws BookException{
 
 		String error = (saveTitle(title) + saveSummary(summary) + saveYear(pubYear) + saveIsbn(isbn));
 		if(error.length() > 0){
 			alertShowAndThrow(error);
 		}
 		this.bookID = id;
+		this.publisher = publisher;
 		try {
 			BookTableGateway.getInstance().saveBook(this);
 		} catch (BookException e){
@@ -144,14 +147,21 @@ public class Book {
 	}
 
     public String getIsbn() { return isbn; }
-	public int getPublisherId() { return publisherId; }
-    public void setPublisherId(int id){ this.publisherId = id; }
+	//public int getPublisherId() { return publisherId; }
+    //public void setPublisherId(int id){ this.publisherId = id; }
 	public int getBookID(){ return bookID; }
 	public void setBookID(int bookID) { this.bookID = bookID; }
     public String getTitle() { return title; }
     public String getSummary() { return summary; }
     public int getPubYear() { return pubYear; }
 	public void setPubYear(int pubYear) { this.pubYear = pubYear; }
+	public Publisher getPublisher(){
+    	return publisher;
+	}
+
+	public void setPublisher(Publisher publisher) {
+		this.publisher = publisher;
+	}
 
 	public LocalDateTime getLastModified() { return lastModified; }
 	public void setLastModified(LocalDateTime lastModified) { this.lastModified = lastModified; }
