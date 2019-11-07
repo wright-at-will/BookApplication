@@ -222,6 +222,10 @@ public class MenuController implements Initializable {
         }
     }
 
+    public BookDetailController getController(){
+        return (BookDetailController) controller;
+    }
+
     private void loadScreen(String view, MasterController controller) throws IOException {
         URL url = this.getClass().getClassLoader().getResource("com/cs4743/View/" + view);
         FXMLLoader loader = new FXMLLoader(url);

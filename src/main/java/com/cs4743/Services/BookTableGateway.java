@@ -250,22 +250,23 @@ public class BookTableGateway {
 
     public List<AuditTrailEntry> getAuditTrail(int bookId) {
         List<AuditTrailEntry> auditTrail = new ArrayList<AuditTrailEntry>();
-        Statement stmt = null;
         try{
-            String query = "SELECT * FROM book_audit_trail ORDER BY date_added ASC ";
+            String query = "SELECT * FROM book_audit_trail WHERE book_id = ? ORDER BY date_added ASC ";
             //stmt = getConnection(Connection.TRANSACTION_READ_COMMITTED).createStatement();
             //ResultSet rs = stmt.executeQuery(query);
-
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1,bookId);
+            rs = stmt.executeQuery();
             while(rs.next()){
-                if (rs.getInt("book_id") == bookId){
+                //if (rs.getInt("book_id") == bookId){
                     AuditTrailEntry atr = new AuditTrailEntry();
                     atr.setId(rs.getInt("id"));
                     atr.setDateAdded(rs.getTimestamp("date_added").toLocalDateTime());
                     atr.setMessage(rs.getString("entry_msg"));
                     auditTrail.add(atr);
-                }
+                //}
             }
-            closeConnection();
+            //closeConnection();
         } catch(SQLException err){
             System.out.println(err.getMessage());
         }

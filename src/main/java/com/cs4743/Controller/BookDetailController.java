@@ -42,7 +42,7 @@ public class BookDetailController implements Initializable, MasterController {
     @FXML
     private ComboBox<Publisher> publisherComboBox;
 
-    private static Book book, tempBook;
+    private Book book, tempBook;
 
     public static boolean verifyUserSaved = false;
 
@@ -273,16 +273,14 @@ public class BookDetailController implements Initializable, MasterController {
         AuditTrailController.moveTempToAudit(tempBook);
     }
     
-    public static void restoreBook(Book tempBook) {
-            book.setBookID(tempBook.getBookID());
-            book.saveTitle(tempBook.getTitle());
-            book.saveSummary(tempBook.getSummary());  
-            book.saveYear(String.valueOf(tempBook.getPubYear()));
-            book.saveIsbn(tempBook.getIsbn());
-            //publisherComboBox.setValue(trackPublisher.get(0));
-            tempBook = null;
-            logger.info("Temp Book Destroyed"); 
-            System.out.println("===Inside BookDetailController: restoreBook ===\nBook ID: " + book.getBookID() + "\nBook Title: " + book.getTitle() + 
+    public void restoreBook(Book book) {
+        //auditTrailButton.setDisable(false);
+        titleField.setText(book.getTitle());
+        summaryArea.setText(book.getSummary());
+        yearField.setText(book.pubYear>0?Integer.toString(book.getPubYear()):"");
+        isbnField.setText(book.getIsbn());
+            logger.info("Temp Book Destroyed");
+            System.out.println("===Inside BookDetailController: restoreBook ===\nBook ID: " + book.getBookID() + "\nBook Title: " + book.getTitle() +
             		"\nBook Year: " + book.getPubYear() + "\nBook ISBN: " + book.getIsbn() + "\nBook Summary: " + book.getSummary());
     }
 

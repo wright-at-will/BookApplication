@@ -40,8 +40,10 @@ public class AuditTrailController implements Initializable, MasterController {
 
     @FXML
     void clickedBackToDetails(ActionEvent event) { 
-    	BookDetailController.restoreBook(book);
-    	MenuController.getInstance().switchView(ViewType.BOOKDETAILVIEW); 
+    	//BookDetailController.restoreBook(book);
+    	MenuController controller = MenuController.getInstance();
+    	controller.switchView(ViewType.BOOKDETAILVIEW);
+    	controller.getController().restoreBook(book);
     }
 
     AuditTrailController() { }
