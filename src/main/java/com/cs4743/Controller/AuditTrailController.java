@@ -25,7 +25,7 @@ public class AuditTrailController implements Initializable, MasterController {
     public static ObservableList<AuditTrailEntry> trackChanges = FXCollections.observableArrayList();
 
     @FXML
-    private ListView<AuditTrailEntry> auditTrailListLog;
+    private ListView<AuditTrailEntry> auditTrailList;
 
     @FXML
     private Button backToDetailsButton;
@@ -49,10 +49,10 @@ public class AuditTrailController implements Initializable, MasterController {
     public void initialize(URL location, ResourceBundle resources) {
         String bookTitle = BookListController.getSelection().getTitle();
         bookTitleLabel.setText(bookTitle);
-        auditTrailListLog.setEditable(true);
+        auditTrailList.setEditable(true);
         log.info(trackChanges);
-        auditTrailListLog.setItems(trackChanges);
-        auditTrailListLog.setCellFactory(param -> new ListCell<AuditTrailEntry>() {
+        auditTrailList.setItems(trackChanges);
+        auditTrailList.setCellFactory(param -> new ListCell<AuditTrailEntry>() {
             @Override
             protected void updateItem(AuditTrailEntry item, boolean empty) {
                 super.updateItem(item, empty);

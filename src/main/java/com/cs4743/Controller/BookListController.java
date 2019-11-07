@@ -46,8 +46,8 @@ public class BookListController implements Initializable, MasterController {
 
     private BookListController(List<Book> books, BookTableGateway btg) {
         bookListHistory.clear();
-        emptyBook = books.get(0);
-        for (int i = 1; i < books.size(); i++) {
+        //emptyBook = books.get(0);
+        for (int i = 0; i < books.size(); i++) {
             bookListHistory.add(books.get(i));
         }
         this.btg = btg;

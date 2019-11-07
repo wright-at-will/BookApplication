@@ -194,10 +194,11 @@ public class BookDetailController implements Initializable, MasterController {
     // updates the list of publishers on the detail view from the database list
     public void updatePubisherLists(List<Publisher> publisher){
         trackPublisher.clear();
-        for(int i = 0; i < publisher.size(); i++){
-            publisherNameList.add(publisher.get(i).getPublisherName());
-            trackPublisher.add(publisher.get(i));
-        }
+        trackPublisher.setAll(publisher);
+        //for(int i = 0; i < publisher.size(); i++){
+        //    publisherNameList.add(publisher.get(i).getPublisherName());
+        //    trackPublisher.add(publisher.get(i));
+        //}
     }
 
     // adds audit info for a new book
@@ -258,6 +259,7 @@ public class BookDetailController implements Initializable, MasterController {
     private boolean checkIsbn(){
         return check(book.getIsbn(),isbnField.getText());
     }
+
     // search for differences between the text fields and what they should be by default
     public Boolean checkForChangesNewBook() {
 
