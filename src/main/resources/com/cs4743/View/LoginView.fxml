@@ -7,33 +7,33 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cs4743.Controller.LoginController">
+<AnchorPane prefHeight="237.0" prefWidth="464.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cs4743.Controller.LoginController">
    <children>
-      <TextField fx:id="UsernameField" layoutX="215.0" layoutY="142.0" promptText="Username" />
-      <TextField fx:id="PasswordField" layoutX="215.0" layoutY="225.0" promptText="Password" />
-      <Text layoutX="59.0" layoutY="160.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:">
+      <TextField fx:id="usernameField" layoutX="186.0" layoutY="74.0" promptText="Username" />
+      <TextField fx:id="passwordField" layoutX="186.0" layoutY="130.0" promptText="Password" />
+      <Text layoutX="36.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:">
          <font>
             <Font name="DejaVu Serif" size="22.0" />
          </font>
       </Text>
-      <Text layoutX="66.0" layoutY="243.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:">
+      <Text layoutX="36.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:">
          <font>
             <Font name="DejaVu Serif" size="22.0" />
          </font>
       </Text>
-      <Text layoutX="107.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Username and Password">
+      <Text layoutX="36.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Username and Password">
          <font>
             <Font name="DejaVu Serif Bold" size="22.0" />
          </font>
       </Text>
-      <Button fx:id="Cancel" layoutX="271.0" layoutY="316.0" mnemonicParsing="false" text="Cancel">
+      <Button fx:id="cancelButton" layoutX="203.0" layoutY="174.0" mnemonicParsing="false" onAction="#clickCancel" text="Cancel">
          <font>
-            <Font name="DejaVu Serif" size="28.0" />
+            <Font name="DejaVu Serif" size="22.0" />
          </font>
       </Button>
-      <Button fx:id="Login" layoutX="450.0" layoutY="316.0" mnemonicParsing="false" text="Login">
+      <Button fx:id="loginButton" layoutX="340.0" layoutY="174.0" mnemonicParsing="false" onAction="#clickLogin" text="Login">
          <font>
-            <Font name="DejaVu Serif" size="28.0" />
+            <Font name="DejaVu Serif" size="22.0" />
          </font>
       </Button>
    </children>

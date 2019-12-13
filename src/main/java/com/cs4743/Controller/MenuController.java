@@ -84,7 +84,7 @@ public class MenuController implements Initializable {
                 return;
         }
         if(event.getSource()==closeAppMenuItem){
-                Platform.exit();
+                App.exit();
         } else if(event.getSource() == showBookListMenuItem){
             switchView(ViewType.BOOKLISTVIEW);
         } else if(event.getSource() == newBookMenuItem){
