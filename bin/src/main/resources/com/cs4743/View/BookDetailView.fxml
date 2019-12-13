@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="549.0" minWidth="10.0" prefWidth="134.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="466.0" minWidth="10.0" prefWidth="466.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <Label fx:id="titleLabel" text="Title" wrapText="true">
+            <GridPane.margin>
+                <Insets left="10.0" />
+            </GridPane.margin></Label>
+        <Label fx:id="summaryLabel" text="Summary" wrapText="true" GridPane.rowIndex="1">
+            <GridPane.margin>
+                <Insets left="10.0" />
+            </GridPane.margin></Label>
+        <Label fx:id="yearLabel" text="Year Published" wrapText="true" GridPane.rowIndex="2">
+            <GridPane.margin>
+                <Insets left="10.0" />
+            </GridPane.margin></Label>
+        <Label fx:id="isbnLabel" text="ISBN" wrapText="true" GridPane.rowIndex="3">
+            <GridPane.margin>
+                <Insets left="10.0" />
+            </GridPane.margin></Label>
+        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#clickSaveButton" text="Save" GridPane.rowIndex="4">
+            <GridPane.margin>
+                <Insets left="10.0" />
+            </GridPane.margin></Button>
+      <TextArea fx:id="summaryArea" prefHeight="200.0" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <TextField fx:id="titleField" GridPane.columnIndex="1" />
+      <TextField fx:id="yearField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="isbnField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    </children>
+</GridPane>

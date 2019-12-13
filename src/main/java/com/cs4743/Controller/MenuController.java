@@ -2,12 +2,16 @@ package com.cs4743.Controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
-
+import com.cs4743.Model.AuditTrailEntry;
 import com.cs4743.Model.Book;
+import com.cs4743.Services.BookException;
 import com.cs4743.Services.BookTableGateway;
 import com.cs4743.View.ViewType;
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -16,6 +20,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.BorderPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +33,8 @@ public class MenuController implements Initializable {
 
     // define MenuController instance for the Singleton class
     private static MenuController instance = null;
+    public static BookTableGateway btg = BookTableGateway.getInstance();
+    private MasterController controller = null;
 
     // log4j logger definition
     private static Logger logger = LogManager.getLogger(MenuController.class);
@@ -31,6 +42,19 @@ public class MenuController implements Initializable {
 
     @FXML
     private BorderPane borderPane;
+    @FXML
+    private MenuItem showBookListMenuItem;
+    @FXML
+    private MenuItem closeAppMenuItem;
+    @FXML
+    private MenuItem newBookMenuItem;
+    @FXML
+    private Button auditTrailButton;
+
+    public static ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+    public static ButtonType no = new ButtonType("No", ButtonBar.ButtonData.NO);
+    public static ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+    public static Alert alert = createAlert();
 
     private MenuController(){ }
 
@@ -44,26 +68,73 @@ public class MenuController implements Initializable {
         return instance;
     }
 
-    @FXML
-    private MenuItem showBookListMenuItem;
-    @FXML
-    private MenuItem closeAppMenuItem;
-    @FXML
-    private MenuItem newBookMenuItem;
-
+    /*
+    Received action from menu item
+    Check what screen we are on first and log that
+    */
     @FXML
     void clickMenuItem(ActionEvent event){
-        book = new Book();
-        if(event.getSource() == closeAppMenuItem) {
-            logger.info("Exit menu item clicked.");
-            Platform.exit();
-        }else if(event.getSource() == showBookListMenuItem) {
-            logger.info("Book List menu item clicked.");
-            switchView(ViewType.BOOKLISTVIEW);
-        } else if(event.getSource() == newBookMenuItem) {
-            logger.info("New Book menu item clicked");
-            switchView(ViewType.BOOKDETAILVIEW);
+        logger.info(controller);
+        logger.info(event.getSource());
+        if(controller instanceof BookDetailController){
+            if(!cleanup((BookDetailController) controller))
+                return;
+        } else if(controller instanceof AuditTrailController){
+            if(!cleanup2((AuditTrailController) controller))
+                return;
         }
+        if(event.getSource()==closeAppMenuItem){
+                Platform.exit();
+        } else if(event.getSource() == showBookListMenuItem){
+            switchView(ViewType.BOOKLISTVIEW);
+        } else if(event.getSource() == newBookMenuItem){
+            switchView(ViewType.NEWBOOKVIEW);
+        }
+    }
+
+    private boolean cleanup(BookDetailController controller){
+        if(!controller.checkForChanges())
+            return  stopBookTableGateway();
+        Optional<ButtonType> saveMenuResult = alert.showAndWait();
+        if (saveMenuResult.get() == yes) {
+            logger.info("Yes was pressed");
+            controller.fireSave();
+        } else if (saveMenuResult.get() == no) {
+            logger.info("No was pressed");
+        } else if (saveMenuResult.get() == cancel) {
+            logger.info("Cancel was pressed");
+            return false;
+        }else {
+            logger.info("No changes on the model were found");
+        }
+        return stopBookTableGateway();
+    }
+
+    private boolean cleanup2(AuditTrailController controller){
+        return cleanup(controller.getBDC());
+
+    }
+
+
+    private Boolean stopBookTableGateway() {
+        try {
+            btg.closeConnection();
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        return true;
+    }
+
+    private Optional<ButtonType> switchBookListView() {
+        switchView(ViewType.BOOKLISTVIEW);
+        BookDetailController.verifyUserSaved = false;
+        return null;
+    }
+
+    private Optional<ButtonType> addBookView() {
+        switchView(ViewType.NEWBOOKVIEW);
+        BookDetailController.verifyUserSaved = false;
+        return null;
     }
 
     public void setDetailView(Book book){
@@ -75,21 +146,37 @@ public class MenuController implements Initializable {
 
     public void switchView(ViewType viewType){
         String view = "";
-        MasterController controller = null;
+        //MasterController controller = null;
         switch(viewType){
             case BOOKLISTVIEW:
                 view = "BookListView.fxml";
-                controller = new BookListController();
+                List<Book> books = BookTableGateway.getInstance().bookList();
+                controller = BookListController.getBookListController(books, btg);
                 logger.info("Switching to BookListView");
                 break;
             case BOOKDETAILVIEW:
                 view = "BookDetailView.fxml";
-                controller = new BookDetailController(BookTableGateway.read(book.getBookID()));
-                logger.info("Switching to BookDetailView");
+                try {
+                    Book readBook = btg.read(book.getBookID());
+
+                    controller = new BookDetailController(readBook, btg);
+                    logger.info("Switching to BookDetailView");
+                } catch (BookException e){ book.alertShowAndThrow(e.getMessage() +
+                        "\n Another user may be editing this book"); }
                 break;
             case NEWBOOKVIEW:
                 view = "BookDetailView.fxml";
-                controller = new BookDetailController(new Book());
+                controller = new BookDetailController(new Book(), btg);
+                break;
+            case SAVEDETAILCHANGES:
+                view = "SaveDetailChanges.fxml";
+                controller = new SaveDetailChangesController();
+                break;
+            case AUDITTRAILVIEW:
+                view = "AuditTrailView.fxml";
+                List<AuditTrailEntry> auditTrail = BookListController.getSelection().getAuditTrail();
+                controller = new AuditTrailController(auditTrail, (BookDetailController) controller);
+                logger.info("Switching to AuditTrailView");
                 break;
         }
         try {
@@ -100,12 +187,24 @@ public class MenuController implements Initializable {
         }
     }
 
+    public BookDetailController getController(){
+        return (BookDetailController) controller;
+    }
+
     private void loadScreen(String view, MasterController controller) throws IOException {
-        URL url = this.getClass().getClassLoader().getResource("com/cs4743/View/" +view);
+        URL url = this.getClass().getClassLoader().getResource("com/cs4743/View/" + view);
         FXMLLoader loader = new FXMLLoader(url);
         loader.setController(controller);
         Parent viewNode = loader.load();
         borderPane.setCenter(viewNode);
+    }
+
+    public static Alert createAlert() {
+
+        Alert alert = new Alert(AlertType.NONE, "Sample", yes, no, cancel);
+        alert.setTitle("Warning: Attempting to exit page without saving changes.");
+        alert.setContentText("Would you like to save your work?");
+        return alert;
     }
 
     @Override
@@ -118,5 +217,9 @@ public class MenuController implements Initializable {
     public void setBorderPane(BorderPane borderPane) {
         this.borderPane = borderPane;
     }
+
+    public void fireCloseMenu() { closeAppMenuItem.fire(); }
+
+    public void fireBookListMenu() { showBookListMenuItem.fire(); }
 
 }
