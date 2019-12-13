@@ -7,11 +7,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cs4743.Controller.LoginController">
    <children>
-      <TextField layoutX="215.0" layoutY="142.0" promptText="Username" />
-      <TextField layoutX="215.0" layoutY="225.0" promptText="Password" />
+      <TextField fx:id="UsernameField" layoutX="215.0" layoutY="142.0" promptText="Username" />
+      <TextField fx:id="PasswordField" layoutX="215.0" layoutY="225.0" promptText="Password" />
       <Text layoutX="59.0" layoutY="160.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:">
          <font>
             <Font name="DejaVu Serif" size="22.0" />
@@ -27,5 +26,15 @@
             <Font name="DejaVu Serif Bold" size="22.0" />
          </font>
       </Text>
+      <Button fx:id="Cancel" layoutX="271.0" layoutY="316.0" mnemonicParsing="false" text="Cancel">
+         <font>
+            <Font name="DejaVu Serif" size="28.0" />
+         </font>
+      </Button>
+      <Button fx:id="Login" layoutX="450.0" layoutY="316.0" mnemonicParsing="false" text="Login">
+         <font>
+            <Font name="DejaVu Serif" size="28.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>
