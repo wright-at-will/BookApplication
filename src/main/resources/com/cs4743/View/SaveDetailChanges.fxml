@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <Label text="Would you like to save any changes before exiting? " textAlignment="CENTER" textOverrun="CLIP" wrapText="true" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets top="20.0" />
+            </BorderPane.margin>
+            <font>
+                <Font size="36.0" />
+            </font>
+        </Label>
+    </top>
+    <left>
+        <Button fx:id="yesButton" mnemonicParsing="false" onAction="#clickedYesButton" prefHeight="40.0" prefWidth="100.0" text="Yes" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets left="40.0" />
+            </BorderPane.margin>
+        </Button>
+    </left>
+    <center>
+        <Button fx:id="noButton" mnemonicParsing="false" onAction="#clickedNoButton" prefHeight="40.0" prefWidth="100.0" text="No" BorderPane.alignment="CENTER" />
+    </center>
+    <right>
+        <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#clickedCancelButton" prefHeight="40.0" prefWidth="100.0" text="Cancel" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets right="40.0" />
+            </BorderPane.margin>
+        </Button>
+    </right>
+</BorderPane>
