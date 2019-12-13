@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
@@ -24,6 +25,14 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setTitle("Book Inventory System");
         stage.show();
+        //createLogin(stage);
+
+    }
+
+    private void createLogin(Stage parentStage) throws IOException{
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        Scene loginScene = new Scene(loadFXML("LoginView"));
     }
 
     static void setRoot(String fxml) throws IOException {
