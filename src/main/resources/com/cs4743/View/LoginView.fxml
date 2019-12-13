@@ -1,14 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.cs4743.View.LoginView"
-            prefHeight="400.0" prefWidth="600.0">
 
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextField layoutX="215.0" layoutY="142.0" promptText="Username" />
+      <TextField layoutX="215.0" layoutY="225.0" promptText="Password" />
+      <Text layoutX="59.0" layoutY="160.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:">
+         <font>
+            <Font name="DejaVu Serif" size="22.0" />
+         </font>
+      </Text>
+      <Text layoutX="66.0" layoutY="243.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:">
+         <font>
+            <Font name="DejaVu Serif" size="22.0" />
+         </font>
+      </Text>
+      <Text layoutX="107.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Username and Password">
+         <font>
+            <Font name="DejaVu Serif Bold" size="22.0" />
+         </font>
+      </Text>
+   </children>
 </AnchorPane>

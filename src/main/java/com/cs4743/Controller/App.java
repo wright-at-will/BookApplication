@@ -25,14 +25,16 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setTitle("Book Inventory System");
         stage.show();
-        //createLogin(stage);
+        createLogin(stage);
 
     }
 
     private void createLogin(Stage parentStage) throws IOException{
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
-        Scene loginScene = new Scene(loadFXML("LoginView"));
+        Scene loginScene = new Scene(new FXMLLoader(App.class.getClassLoader().getResource("com/cs4743/View/LoginView.fxml")).load());
+        stage.setScene(loginScene);
+        stage.show();
     }
 
     static void setRoot(String fxml) throws IOException {
