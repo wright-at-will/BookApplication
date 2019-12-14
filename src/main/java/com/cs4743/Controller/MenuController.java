@@ -54,6 +54,7 @@ public class MenuController implements Initializable {
     private Book book;
 
     CookieStore cookieStore = new BasicCookieStore();
+    public String sessionToken;
     private FileChooser fileChooser;
 
     @FXML

@@ -66,7 +66,10 @@ public class LoginController {
                 //Handle working credentials
             } else {
                 //user is unauthorized. Can also go in sendRequest method, but this covers all falsey basis. 
-                loginButton.setOnAction(event);
+                a.setAlertType(AlertType.ERROR);
+                a.setHeaderText("401 Response");
+                a.setContentText("The user is unauthorized.");
+                a.showAndWait();
             }
         } catch (Exception e){
             e.printStackTrace();
@@ -107,6 +110,8 @@ public class LoginController {
             log.info("Response failed");
             return false;
         }
+        mc.sessionToken = response.getEntity().getContent().toString();
+
         log.info("Response passed");
         return true;
     }
@@ -130,12 +135,6 @@ public class LoginController {
         return hexString.toString();
     }
 
-    EventHandler<ActionEvent> event = event -> {
-        a.setAlertType(AlertType.ERROR);
-        a.setHeaderText("401 Response");
-        a.setContentText("The user is unauthorized.");
-        a.showAndWait();
-    };
 
     @FXML
     public void initialize(){
