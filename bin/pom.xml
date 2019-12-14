@@ -25,11 +25,6 @@
             <artifactId>jedis</artifactId>
             <version>3.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.10</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -67,15 +62,6 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <configuration>
-                    <mainClass>com.cs4743.Controller.App</mainClass>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 </project>
