@@ -26,6 +26,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.BorderPane;
+import org.apache.http.client.CookieStore;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,6 +41,8 @@ public class MenuController implements Initializable {
     // log4j logger definition
     private static Logger logger = LogManager.getLogger(MenuController.class);
     private Book book;
+
+    CookieStore cookieStore = new BasicCookieStore();
 
     @FXML
     private BorderPane borderPane;
@@ -221,5 +225,7 @@ public class MenuController implements Initializable {
     public void fireCloseMenu() { closeAppMenuItem.fire(); }
 
     public void fireBookListMenu() { showBookListMenuItem.fire(); }
+
+    public CookieStore getCookieStore(){return cookieStore;}
 
 }
