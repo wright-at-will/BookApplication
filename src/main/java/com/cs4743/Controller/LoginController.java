@@ -7,6 +7,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
+import javafx.stage.Stage;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -28,10 +29,14 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestExecutor;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.IOUtils;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
@@ -64,6 +69,8 @@ public class LoginController {
         try {
             if (sendRequest(usernameField.getText(), passwordField.getText())) {
                 //Handle working credentials
+                Stage stage = (Stage) loginButton.getScene().getWindow();
+                stage.close();
             } else {
                 //user is unauthorized. Can also go in sendRequest method, but this covers all falsey basis. 
                 a.setAlertType(AlertType.ERROR);
@@ -103,17 +110,20 @@ public class LoginController {
                         .setDefaultCookieStore(mc.getCookieStore())
                         .build();
 
-        log.info("Built client");
+        log.info("Built client");;
         HttpResponse response = client.execute(getMethod);
         log.info("Got response");
-        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-            log.info("Response failed");
-            return false;
-        }
-        mc.sessionToken = response.getEntity().getContent().toString();
+        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            log.info("Response passed");
 
-        log.info("Response passed");
-        return true;
+            String body = EntityUtils.toString(response.getEntity());
+            mc.sessionToken = body;
+            log.info(mc.sessionToken);
+            return true;
+        }
+
+        log.info("Response failed");
+        return false;
     }
 
 

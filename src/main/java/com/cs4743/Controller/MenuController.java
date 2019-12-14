@@ -125,9 +125,10 @@ public class MenuController implements Initializable {
                     HttpClientBuilder
                             .create()
                             .setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build())
+
                             .setDefaultCookieStore(cookieStore)
                             .build();
-
+            getMethod.addHeader("Authorization","Bearer "+sessionToken);
             HttpResponse response = client.execute(getMethod);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 //TODO download file
@@ -135,6 +136,11 @@ public class MenuController implements Initializable {
                 return;
                 //return false;
             }
+            Alert a = new Alert(AlertType.ERROR);
+            a.setAlertType(AlertType.ERROR);
+            a.setHeaderText("403 Response");
+            a.setContentText("Forbidden Action");
+            a.showAndWait();
             logger.info(response.getStatusLine());
             //return true;
         } catch (Exception e){
@@ -154,6 +160,8 @@ public class MenuController implements Initializable {
         Stage fileStage = new Stage();
         fileStage.initOwner(borderPane.getScene().getWindow());
         File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+        if(file == null)
+            return;
         InputStream is = response.getEntity().getContent();
         FileOutputStream fos = new FileOutputStream(file);
         int inByte;
