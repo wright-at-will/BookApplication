@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -17,6 +19,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.cookie.CookieSpec;
 import org.apache.http.cookie.CookieSpecProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -27,6 +30,8 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -46,7 +51,8 @@ public class LoginController {
 
     private MenuController mc;
     private boolean userFilled,passFilled;
-
+    @FXML
+    Stage stage;
     @FXML
     TextField usernameField;
     @FXML
@@ -60,6 +66,9 @@ public class LoginController {
         try {
             if (sendRequest(usernameField.getText(), passwordField.getText())) {
                 //Handle working credentials
+                //Move to close this window
+                stage = (Stage) loginButton.getScene().getWindow();
+                stage.close();
             }
         } catch (Exception e){
             e.printStackTrace();
@@ -83,7 +92,6 @@ public class LoginController {
                 .addParameter("username", username)
                 .addParameter("password", getHash(password));
         URI uri = uriBuilder.build();
-        log.info("Built uri");
 
         HttpGet getMethod = new HttpGet(uri);
         HttpClient client =
@@ -93,14 +101,10 @@ public class LoginController {
                         .setDefaultCookieStore(mc.getCookieStore())
                         .build();
 
-        log.info("Built client");
         HttpResponse response = client.execute(getMethod);
-        log.info("Got response");
         if(response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-            log.info("Response failed");
             return false;
         }
-        log.info("Response passed");
         return true;
     }
 
