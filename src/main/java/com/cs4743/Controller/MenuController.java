@@ -1,6 +1,6 @@
 package com.cs4743.Controller;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -27,6 +27,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.CookieStore;
@@ -52,6 +54,7 @@ public class MenuController implements Initializable {
     private Book book;
 
     CookieStore cookieStore = new BasicCookieStore();
+    private FileChooser fileChooser;
 
     @FXML
     private BorderPane borderPane;
@@ -107,13 +110,12 @@ public class MenuController implements Initializable {
 
     @FXML
     private void getBookReport(){
-        logger.info("User is trying to get report");
         //Create request for the file
         URIBuilder uriBuilder = new URIBuilder();
         uriBuilder.setScheme("http")
                 .setHost("localhost")
                 .setPort(8888)
-                .setPath("/reports/bookDetail");
+                .setPath("/reports/bookdetail");
         try {
             URI uri = uriBuilder.build();
 
@@ -127,15 +129,38 @@ public class MenuController implements Initializable {
 
             HttpResponse response = client.execute(getMethod);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                logger.info("User authorized");
+                //TODO download file
+                downloadFile(response);
                 return;
                 //return false;
             }
-            logger.info("user authorized");
+            logger.info(response.getStatusLine());
             //return true;
         } catch (Exception e){
+            e.printStackTrace();
             logger.error(e.getMessage());
         }
+    }
+
+    private void downloadFile(HttpResponse response)throws Exception {
+        //bookReport.xlsx
+        logger.info("Creating file chooser");
+        fileChooser = new FileChooser();
+        fileChooser.setTitle("Select location");
+        fileChooser.setInitialFileName("Book_Report.xlsx");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel SpreadSheet file (*.xlsx)", "*.xlsx");
+        fileChooser.getExtensionFilters().add(extFilter);
+        Stage fileStage = new Stage();
+        fileStage.initOwner(borderPane.getScene().getWindow());
+        File file = fileChooser.showSaveDialog(borderPane.getScene().getWindow());
+        InputStream is = response.getEntity().getContent();
+        FileOutputStream fos = new FileOutputStream(file);
+        int inByte;
+        while((inByte = is.read()) != -1)
+            fos.write(inByte);
+        logger.info("File is downloaded at: "+file.getAbsolutePath());
+        is.close();
+        fos.close();
     }
 
     private boolean cleanup(BookDetailController controller){

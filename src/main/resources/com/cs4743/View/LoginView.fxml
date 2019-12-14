@@ -31,7 +31,7 @@
             <Font name="DejaVu Serif" size="22.0" />
          </font>
       </Button>
-      <Button fx:id="loginButton" layoutX="340.0" layoutY="174.0" mnemonicParsing="false" onAction="#clickLogin" text="Login">
+      <Button fx:id="loginButton" defaultButton="true" disable="true" layoutX="340.0" layoutY="174.0" mnemonicParsing="false" onAction="#clickLogin" text="Login">
          <font>
             <Font name="DejaVu Serif" size="22.0" />
          </font>
