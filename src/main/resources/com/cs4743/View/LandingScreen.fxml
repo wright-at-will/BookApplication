@@ -21,6 +21,11 @@
                         <MenuItem fx:id="closeAppMenuItem" mnemonicParsing="false" onAction="#clickMenuItem" text="Close Application" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="Reports">
+              <items>
+                <MenuItem fx:id="bookReport" mnemonicParsing="false" onAction="#getBookReport" text="Book Detail" />
+              </items>
+            </Menu>
             </menus>
         </MenuBar>
     </top>

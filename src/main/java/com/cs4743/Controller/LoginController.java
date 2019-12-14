@@ -102,10 +102,11 @@ public class LoginController {
                         .build();
 
         HttpResponse response = client.execute(getMethod);
-        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-            return false;
+        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            return true;
         }
-        return true;
+        //TODO Do alert thingy
+        return false;
     }
 
 

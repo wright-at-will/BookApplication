@@ -1,6 +1,7 @@
 package com.cs4743.Controller;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +27,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.BorderPane;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -93,6 +102,39 @@ public class MenuController implements Initializable {
             switchView(ViewType.BOOKLISTVIEW);
         } else if(event.getSource() == newBookMenuItem){
             switchView(ViewType.NEWBOOKVIEW);
+        }
+    }
+
+    @FXML
+    private void getBookReport(){
+        logger.info("User is trying to get report");
+        //Create request for the file
+        URIBuilder uriBuilder = new URIBuilder();
+        uriBuilder.setScheme("http")
+                .setHost("localhost")
+                .setPort(8888)
+                .setPath("/reports/bookDetail");
+        try {
+            URI uri = uriBuilder.build();
+
+            HttpGet getMethod = new HttpGet(uri);
+            HttpClient client =
+                    HttpClientBuilder
+                            .create()
+                            .setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build())
+                            .setDefaultCookieStore(cookieStore)
+                            .build();
+
+            HttpResponse response = client.execute(getMethod);
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                logger.info("User authorized");
+                return;
+                //return false;
+            }
+            logger.info("user authorized");
+            //return true;
+        } catch (Exception e){
+            logger.error(e.getMessage());
         }
     }
 
